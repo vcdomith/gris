@@ -6,6 +6,8 @@ export default function AuthButton() {
 
     const { data: session } = useSession()
 
+    console.log(session);
+
     return (
         <div>
         {session ? (
