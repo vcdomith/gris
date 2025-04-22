@@ -1,0 +1,183 @@
+import { createClient } from './../../node_modules/@supabase/supabase-js/src/index';
+import { SpotifyToken } from "@/interfaces/Spotify";
+import { Account, Session, User } from "next-auth";
+import SpotifyProvider from "next-auth/providers/spotify";
+import { dbAdmin } from './db/supabase';
+
+const supabaseAdmin = dbAdmin()
+
+const refreshAccessToken = async (token: string): Promise<Partial<SpotifyToken> | null> => {
+
+    try {
+
+        const basic = Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64')
+
+        const res = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${basic}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                grant_type: 'refresh_token',
+                refresh_token: token,
+            }),
+        })
+
+        const data = await res.json()
+        console.log(data);
+
+        if (!res.ok) throw new Error(data)
+
+            return {
+                accessToken: data.access_token,
+                expiresAt: Date.now() + data.access_expires_in * 1000,
+                refreshToken: data.refresh_token ?? token,
+            }
+
+    } catch (error) {
+        console.error("Failed to refresh access token", JSON.stringify(error))
+        return null
+    }
+
+}
+
+export const authOptions = {
+    providers: [
+        SpotifyProvider({
+            clientId: process.env.SPOTIFY_CLIENT_ID!,
+            clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
+            authorization: {
+                params: {
+                    scope: "user-read-email user-read-private user-read-playback-state user-modify-playback-state streaming",
+                }
+            }
+        })
+    ],
+    secret: process.env.NEXTAUTH_SECRET,
+    callbacks: {
+
+        async signIn(
+            {user, account}: 
+            {user: User, account: Account}
+        ) {
+            console.log('signin', user, account);
+
+            const { email, image } = user
+            const { refresh_token, providerAccountId } = account
+
+            if (!email || !refresh_token) return false;
+
+            const { data, error } = await supabaseAdmin
+                .schema('gris')
+                .from('users')
+                .select('refresh_token')
+                .eq('email', email)
+                .single()
+
+            console.log(data, error);
+
+            if (error && error.code !== 'PGRST116'){
+                console.error('Supabase fetch error:', error)
+                return false;
+            }    
+
+            if (!data) {
+                // Usuário não existe na tabela -> inserir 
+                console.log('no data exists');
+            
+                const { data: insertData, error: insertError } = await supabaseAdmin
+                    .schema('gris')
+                    .from('users')
+                    .insert({
+                        email,
+                        spotify_id: providerAccountId,
+                        refresh_token,
+                        image
+                    })
+
+                console.log(insertData, insertError);
+
+                if (insertError) {
+                    console.error('Supabase insert error:', insertError)
+                    return false;
+                }
+
+            } else if (data.refresh_token !== refresh_token) {
+                // Refresh token mudou -> atualizar
+                const { error: updateError } = await supabaseAdmin
+                    .schema('gris')
+                    .from('users')
+                    .update({ refresh_token })
+                    .eq('email', email)
+
+                if (updateError) {
+                    console.error('Supabase update error:', updateError)
+                    return false
+                }
+
+            }
+
+            return true
+        },
+        async jwt({
+                token, 
+                account,
+            }: { 
+                token: SpotifyToken, 
+                account: Account | null
+                session: Session
+            }): Promise<SpotifyToken> {
+
+            if (account) {
+                token.accessToken = account.access_token!;
+                token.providerAccountId = account.providerAccountId!;
+                token.refreshToken = account.refresh_token!;
+                token.expiresAt = account.expires_at! * 1000;
+
+                // console.log(token, account);    
+                // console.log('account ok');
+                return token as SpotifyToken
+            }
+
+            if (Date.now() < (token.expiresAt as number)) {
+                return token
+            }
+
+            // console.log(token, account);
+            console.log('token', token);
+
+            const { data, error } = await supabaseAdmin
+                .schema('gris')
+                .from('users')
+                .select('refresh_token')
+                .eq('spotify_id', token!.providerAccountId!)
+                .single()
+
+            if (error || !data?.refresh_token) {
+                console.error('Could not find refresh token in database:', error)
+                return token;
+            }
+
+            const refreshed =  await refreshAccessToken(data.refresh_token)
+            if (!refreshed) {
+                return {...token, error: 'RefreshAccessTokenError'}
+            }
+
+            return {...token, ...refreshed} as SpotifyToken
+
+        },
+        async session({ 
+            session, 
+            token 
+        }: {
+            session: Session,
+            token: SpotifyToken,
+        }): Promise<Session> {
+            return {
+                ...session,
+                token
+            }
+        }
+    }
+}

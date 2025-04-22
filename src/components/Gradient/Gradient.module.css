@@ -1,0 +1,41 @@
+.gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100vw;
+    height:100vh;
+    z-index: -1;
+    /* black blue */
+    --gradient-color-1: #040625; 
+    --gradient-color-2: #040329; 
+    --gradient-color-3: #000000;  
+    --gradient-color-4: #1124cc;
+    
+    /* --gradient-color-1: #4d0556; 
+    --gradient-color-2: #040329; 
+    --gradient-color-3: #3e0428;  
+    --gradient-color-4: #28020f; */
+
+    /* --gradient-color-1: #410a5a; 
+    --gradient-color-2: #b31684; 
+    --gradient-color-3: #440719;  
+    --gradient-color-4: #1b020b; */
+
+    /* cyan flamingo  */
+    /* --gradient-color-1: #44c2d8; 
+    --gradient-color-2: #1d7bc9; 
+    --gradient-color-3: #e6b6ae;  
+    --gradient-color-4: #db9f6f; */
+
+    /* offwhite dark purple */
+    /* --gradient-color-1: #ebd6ca; 
+    --gradient-color-2: #220536; 
+    --gradient-color-3: #1d0324;  
+    --gradient-color-4: #100116; */
+
+    /* --gradient-color-1: #757575; 
+    --gradient-color-2: #1b1b1b; 
+    --gradient-color-3: #020202;  
+    --gradient-color-4: #0c0c0c; */
+}
+        
