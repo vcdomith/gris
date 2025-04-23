@@ -164,6 +164,18 @@ export const authOptions = {
                 return {...token, error: 'RefreshAccessTokenError'}
             }
 
+            if (refreshed.refreshToken && refreshed.refreshToken !== data.refresh_token) {
+                const { error: updateError } = await supabaseAdmin
+                    .schema('gris')
+                    .from('users')
+                    .update({ refresh_token: refreshed.refreshToken})
+                    .eq('spotify_id', token.providerAccountId)
+
+                if (updateError) {
+                    console.error('Supabase update refresh_token error', updateError)
+                }
+            }
+
             return {...token, ...refreshed} as SpotifyToken
 
         },

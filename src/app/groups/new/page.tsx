@@ -47,7 +47,10 @@ export default async function NewGroup() {
                 value={user.id} 
                 name="id"
             />
-            <button type="submit" className="cursor-pointer bg-amber-50/20 hover:bg-amber-50/30 transition-colors px-2 py-1 rounded-sm">Criar grupo</button>
+            <button 
+                type="submit" 
+                className="cursor-pointer bg-amber-50/20 hover:bg-amber-50/30 transition-colors px-2 py-1 rounded-sm"
+            >Criar grupo</button>
         </form>
         </>
     )

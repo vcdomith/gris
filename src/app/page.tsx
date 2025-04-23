@@ -8,7 +8,6 @@ import GradientComponent from "@/components/Gradient/Gradient";
 import { dbAdmin } from "@/utils/db/supabase";
 import Link from "next/link";
 
-const supabase = dbAdmin()
 
 export default async function Home() {
 
@@ -20,6 +19,8 @@ export default async function Home() {
       redirect(`/api/auth/signin`)
   }
 
+  const supabase = dbAdmin()
+
   const { data: groups, error: groupsError } = await supabase
     .schema('gris')
     .rpc('get_groups', {
@@ -30,7 +31,9 @@ export default async function Home() {
       console.error('Supabase groups query error', groupsError)
   }
 
-  console.log('groups', groups);
+  console.log('Home rendered at', new Date().toISOString());
+
+  // console.log('groups', groups);
 
   // const res = await fetch('https://api.spotify.com/v1/me', {
   //   headers: {
@@ -57,7 +60,7 @@ export default async function Home() {
                 href={'/groups/new'}
                 prefetch
               >
-                <button className="cursor-pointer border-[2px] border-transparent hover:border-amber-50/50 transition-colors px-1 rounded-md">+ criar grupo</button>
+                <button className="cursor-pointer hover:bg-amber-50/20 transition-colors px-1 rounded-md">+ criar grupo</button>
               </Link>
           </span>
 
