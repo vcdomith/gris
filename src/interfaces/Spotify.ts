@@ -45,8 +45,8 @@ export interface TokenSession {
 }
 
 export interface SpotifySearchResponse {
-	tracks: PaginatedResponse<Track>;
-	artists: PaginatedResponse<Artist>;
+	tracks: PaginatedResponse<ITrack>;
+	artists: PaginatedResponse<IArtist>;
 	albums: PaginatedResponse<Album>;
 	playlists: PaginatedResponse<Playlist>;
 	shows: PaginatedResponse<Show>;
@@ -63,9 +63,9 @@ export interface PaginatedResponse<T> {
 	items: T[];
   }
   
-export interface Track {
+export interface ITrack {
 	album: Album;
-	artists: Artist[];
+	artists: IArtist[];
 	available_markets: string[];
 	disc_number: number;
 	duration_ms: number;
@@ -104,10 +104,10 @@ export interface Album {
 	restrictions?: Restrictions;
 	type: string;
 	uri: string;
-	artists: Artist[];
+	artists: IArtist[];
   }
   
-export interface Artist {
+export interface IArtist {
 	external_urls: ExternalUrls;
 	href: string;
 	id: string;

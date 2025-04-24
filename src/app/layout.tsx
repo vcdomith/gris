@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers/providers";
 import GradientComponent from "@/components/Gradient/Gradient";
 import AuthButton from "@/components/AuthButton";
+import Nav from "@/components/Nav/Nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,8 @@ export default function RootLayout({
         <GradientComponent />
         <Providers>
         <div className="flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-          <AuthButton />
+          {/* <AuthButton /> */}
+          <Nav />
           <main className="flex flex-col gap-2 row-start-2 items-center sm:items-start">
             {children}
           </main>

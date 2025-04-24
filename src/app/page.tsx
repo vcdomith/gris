@@ -47,10 +47,13 @@ export default async function Home() {
 
   return (
       <>
-        <div className="flex gap-2 items-center">
+        {/* <div className="flex gap-2 items-center">
+        <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 81.5V45C17 26.7746 31.7746 12 50 12C68.2254 12 83 26.7746 83 45V81.5C83 87.5751 78.0751 92.5 72 92.5C65.9249 92.5 61 87.5751 61 81.5C61 87.5751 56.0751 92.5 50 92.5C43.9249 92.5 39 87.5751 39 81.5C39 87.5751 34.0751 92.5 28 92.5C21.9249 92.5 17 87.5751 17 81.5ZM65 38C59.4772 38 55 42.4772 55 48H65H75C75 42.4772 70.5228 38 65 38ZM35 38C29.4772 38 25 42.4772 25 48H45C45 42.4772 40.5228 38 35 38Z" fill="#d9d9d9bc"/>
+        </svg>
         <h1 className="text-5xl text-amber-50">Gris</h1>
         <h3 className="text-md text-amber-50/90">- groovy in spirit -</h3>
-        </div>
+        </div> */}
 
         <div className="flex flex-col gap-2">
 

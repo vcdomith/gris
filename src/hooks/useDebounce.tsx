@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-export default function useDebounce<T>(value: T, delay = 500): T {
+export default function useDebounce<T>(value: T, delay = 500): [T, Dispatch<SetStateAction<T>>] {
 
     const [debounced, setDebounced] = useState(value)
 
@@ -9,6 +9,6 @@ export default function useDebounce<T>(value: T, delay = 500): T {
         return () => clearTimeout(timer);
     }, [value, delay])
 
-    return debounced;
+    return [debounced, setDebounced];
 
 }

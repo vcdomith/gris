@@ -1,0 +1,21 @@
+
+.overflow::-webkit-scrollbar {
+    width: 0.15rem;
+}
+
+/* Track */
+.overflow::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+}
+
+/* Handle */
+.overflow::-webkit-scrollbar-thumb {
+    background: white;
+}
+
+/* Handle on hover */
+.overflow::-webkit-scrollbar-thumb:hover {
+    background: wheat;
+    cursor: pointer;
+}
+
