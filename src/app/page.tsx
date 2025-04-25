@@ -55,7 +55,7 @@ export default async function Home() {
         <h3 className="text-md text-amber-50/90">- groovy in spirit -</h3>
         </div> */}
 
-        <div className="flex flex-col gap-2 w-[40vw] bg-amber-50/20 backdrop-blur-lg p-2 rounded">
+        <div className="flex flex-col gap-2 w-full md:w-[60dvw] lg:w-[40dvw] bg-amber-50/20 backdrop-blur-lg p-2 rounded">
 
           <span className="flex justify-between border-b-1 border-b-amber-50/50 pb-1">
               <h3>Grupos</h3>
