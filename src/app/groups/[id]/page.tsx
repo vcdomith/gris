@@ -34,7 +34,7 @@ interface PostDB {
 
 type Params = Promise<{ id: number }>
 export default async function Group(
-    { params, modal }: { params: Params, modal: ReactNode }
+    { params }: { params: Params }
 ) {
 
     const { id } = await params
@@ -133,8 +133,6 @@ export default async function Group(
     return (
         <div className="flex flex-col gap-4 rounded-lg w-[40vw] bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden">
           
-            {modal}
-
             <span className="flex gap-2 items-center w-full pb-1 border-b-2 border-slate-300/30">
             <div>
                 {/* <div className="flex items-center justify-center w-[10px] h-[10px] rounded-4xl ml-auto bg-slate-200 text-slate-900 text-center shadow-2xl"></div> */}
