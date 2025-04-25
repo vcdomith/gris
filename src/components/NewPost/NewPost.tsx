@@ -81,7 +81,7 @@ export default function NewPost() {
 
     return (
         <div 
-            className="flex flex-col bg-neutral-500/50 backdrop-blur-2xl w-[calc(80vw-6rem)] max-w-[calc(600px-6rem)] h-[80dvh] p-2 pt-1 border-2 border-slate-500/30 rounded-md"
+            className="flex flex-col bg-neutral-500/50 backdrop-blur-2xl w-[calc(80vw-6rem)] max-w-[calc(600px-6rem)] h-[80dvh] p-2 pt-1 border-2 border-slate-500/30 rounded-md overflow-hidden"
         >
             <form 
                 action=""
@@ -177,6 +177,17 @@ export default function NewPost() {
                             <div className="h-[1rem] w-[50%] rounded-sm mt-2 bg-neutral-500/30"></div>
                             }
                         </div>
+
+                        {valid&&
+                        <button 
+                            onClick={() => setSelectedTrack(DEFAULT_TRACK)}
+                            className="group bg-transparent hover:bg-amber-50/10 transition-colors cursor-pointer rounded p-0.5"
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 stroke-amber-50/50 group-hover:stroke-amber-50/60 transition-colors">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                        </button>
+                        }
                     </span>
 
                     <textarea 
@@ -194,8 +205,8 @@ export default function NewPost() {
                 
                 {submitting}
                 <button
-                    className={`flex gap-2 justify-center items-center mt-auto border-2 border-amber-50/30 rounded bg-amber-50/20
-                    hover:bg-amber-50/30 transition-colors cursor-pointer disabled:text-amber-50/20 disabled:cursor-default disabled:bg-transparent ${submitting ? 'animate-pulse' : ''}`}
+                    className={`flex gap-2 justify-center items-center mt-auto border-2 border-amber-50/20 rounded bg-amber-50/20
+                    hover:bg-amber-50/30 transition-colors cursor-pointer disabled:text-amber-50/20 disabled:cursor-default disabled:bg-transparent disabled:border-amber-50/15 ${submitting ? 'animate-pulse' : ''}`}
                     disabled={submitting ? true : !valid}
                 >
                     {submitting
