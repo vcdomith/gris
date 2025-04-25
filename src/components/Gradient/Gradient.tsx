@@ -3,7 +3,7 @@ import style from './Gradient.module.css'
 import { default as Gradient } from './Gradient.js'
 import { useEffect, useRef } from 'react'
 
-export default function GradientComponent() {
+export default function GradientComponent({ styleProp = '' }: { styleProp?: string }) {
     
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     
@@ -22,7 +22,7 @@ export default function GradientComponent() {
 
     return (
         <canvas 
-            className={style.gradient} 
+            className={(styleProp === '') ? style.gradient : styleProp} 
             ref={canvasRef}
             id="gradient-canvas" 
             data-transition-in 

@@ -92,3 +92,28 @@ export async function createPost(newTrack: Post, email: string, group_id: string
     revalidatePath(`/groups/${group_id}`)
 
 }
+
+export async function enterGroup(formData: FormData) {
+
+    const rawFormData = {
+        group_id: formData.get('group_id') as string,
+        user_id: formData.get('user_id') as string,
+    }
+
+    console.log(rawFormData);
+
+    const { error: membersError } = await supabase
+        .schema('gris')
+        .from('group_members')
+        .insert({
+            group_id: parseInt(rawFormData.group_id),
+            user_id: parseInt(rawFormData.user_id),
+        })
+
+    if (membersError) {
+        throw new Error(membersError?.message ?? 'Failed to insert member into group')
+    }
+
+    redirect('/')
+
+}

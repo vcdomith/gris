@@ -7,8 +7,35 @@ import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import style from './groups.module.css'
+import crypto from 'crypto'
+
+import { format, isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns'
+
+function groupPostsByDate(posts: PostDB[]): Record<string, PostDB[]> {
+
+    const groups: Record<string, PostDB[]> = {}
+
+    for (const post of posts) {
+
+        const date = new Date(post.created_at)
+
+        let label = 'Mais Antigo'
+
+        if (isToday(date)) label = 'Hoje'
+        else if (isYesterday(date)) label = 'Ontem'
+        else if (isThisWeek(date)) label = 'Essa Semana'
+        else if (isThisMonth(date)) label = 'Esse Mês'
+
+        if (!groups[label]) groups[label] = []
+        groups[label].push(post)
+
+    }
+
+    return groups
+
+}
 
 interface PostDB {
     created_at: string;
@@ -89,15 +116,7 @@ export default async function Group(
             )
         `)
         .eq('group_id', id)
-    // Using a remote procedure call, a postgres function that first checks if the user belongs to the curent group, if it does then queries the posts of this groups descending
-    // const { data: posts, error: postsError } = await supabase
-    //     .schema('gris')
-    //     .rpc('get_group_posts', {
-    //         p_group_id: id,
-    //         p_user_email: session.user!.email!,
-    //     })
-
-    console.log(posts, postsError);
+        .order('id', { ascending: false })
 
     const { data: group, error: groupError }= await supabase
         .schema('gris')
@@ -106,39 +125,32 @@ export default async function Group(
         .eq('id', id)
         .single()
 
-    // const { data: membership, error: membershipError } = await supabase
-    //     .schema('gris')
-    //     .from('group_members')
-    //     .select('id')
-    //     .eq('group_id', id)
-    //     .eq('user_id', )
+    const inviteToken = crypto.randomBytes(32).toString('hex')
+    console.log(inviteToken);
 
-    // SELECT * FROM POSTS 
-    // WHERE group_id = (
-    //  SELECT id FROM groups 
-    //  WHERE id = ? 
-    //  AND
-    //   
-    // )
-    // const { data, error } = await supabase
-    //     .schema('gris')
-    //     .from('posts')
-    //     .select(`
-    //     *,
-    //     group_members!inner(user_id)
-    //     `)
-    //     .eq('group_id', id)
-    //     .eq('group_members.user_id', currentUserId);
+    const groupedPosts = (posts) ? groupPostsByDate(posts) : []
 
     return (
-        <div className="flex flex-col gap-4 rounded-lg w-[40vw] bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden">
+        <div className="flex flex-col gap-4 rounded-lg w-full bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] lg:w-[40dvw]">
           
-            <span className="flex gap-2 items-center w-full pb-1 border-b-2 border-slate-300/30">
-            <div>
-                {/* <div className="flex items-center justify-center w-[10px] h-[10px] rounded-4xl ml-auto bg-slate-200 text-slate-900 text-center shadow-2xl"></div> */}
-                [ ]
-            </div>
-            <h5>{group?.name}</h5>
+            <span className="flex gap-2 justify-between items-center w-full pb-1 border-b-2 border-slate-300/30">
+            
+                <div className="flex gap-2 items-center">
+                    {/* <div className="flex items-center justify-center w-[10px] h-[10px] rounded-4xl ml-auto bg-slate-200 text-slate-900 text-center shadow-2xl"></div> */}
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                    </svg>   */}
+
+                    <h5>{group?.name}</h5>
+                </div>
+
+                <button className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 cursor-pointer rounded px-1 focus:outline-none focus:bg-amber-50/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                    </svg>
+                    Convidar
+                </button>
+
             </span>
 
             <Link 
@@ -158,16 +170,27 @@ export default async function Group(
             {/* <div>
                 <div className="flex items-center justify-center w-[10px] h-[10px] rounded-4xl ml-auto bg-slate-200 text-slate-900 text-center shadow-2xl"></div>
             </div> */}
-            <h5 className="text-lg text-white/80">Semana 1: 13/04 - 19/04</h5>
+            {/* <h5 className="text-lg text-white/80">Semana 1: 13/04 - 19/04</h5> */}
             </span>
             <div 
                 className={`${style.overflow} flex flex-col gap-4`}
             >
-                {posts?.map( post => 
+                {/* {posts?.map( post => 
                     <Post 
                         key={post.id}
                         post={post}
                     />
+                )} */}
+                {Object.entries(groupedPosts).map(([label, group]) => 
+                    <div 
+                        key={label}
+                        className="flex flex-col gap-4"
+                    >
+                        <h5 className="text-lg text-white/80 border-b-2 border-amber-50/20">{label}</h5>
+                        {group.map( post => 
+                            <Post key={post.id} post={post}/>
+                        )}
+                    </div>
                 )}
             </div>
           

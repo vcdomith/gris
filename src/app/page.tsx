@@ -55,19 +55,20 @@ export default async function Home() {
         <h3 className="text-md text-amber-50/90">- groovy in spirit -</h3>
         </div> */}
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-[40vw] bg-amber-50/20 backdrop-blur-lg p-2 rounded">
 
-          <span className="flex justify-between border-b-1 border-b-amber-50/50">
+          <span className="flex justify-between border-b-1 border-b-amber-50/50 pb-1">
               <h3>Grupos</h3>
               <Link 
                 href={'/groups/new'}
                 prefetch
               >
-                <button className="cursor-pointer hover:bg-amber-50/20 transition-colors px-1 rounded-md">+ criar grupo</button>
+                <button className="cursor-pointer hover:bg-amber-50/20 transition-colors px-1 rounded-md">+ Criar</button>
               </Link>
           </span>
 
-          <div>
+          <div className="flex flex-col gap-2">
+          
             {groups?.map(group => 
               // Object.entries(group).map(([key, value]) =>
               //   <div 
@@ -82,15 +83,59 @@ export default async function Home() {
                 key={group.id}
                 href={`/groups/${group.id}`}
                 prefetch
-                className="flex gap-2 transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
+                className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
               >
-                <h4>[ {group.id} ]</h4>
+                {/* <h4>[ {group.id} ]</h4> */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                </svg>
+
+                <h2>{group.name}</h2>
+              </Link>
+            )}
+          </div>  
+
+          <span className="flex justify-between border-b-1 border-b-amber-50/50 pb-1">
+              <h3>Playlists</h3>
+              <Link 
+                href={'/groups/new'}
+                prefetch
+              >
+                <button className="cursor-pointer hover:bg-amber-50/20 transition-colors px-1 rounded-md">+ Criar</button>
+              </Link>
+          </span>
+
+          <div className="flex flex-col gap-2">
+            {groups?.map(group => 
+              // Object.entries(group).map(([key, value]) =>
+              //   <div 
+              //     key={key}
+              //     className="flex gap-2"
+              //   >
+              //     <h2 className="text-sm text-amber-50/80">{key}:</h2>
+              //     <h3 className="text-md text-amber-50">{value}</h3>
+              //   </div>
+              // )
+              <Link 
+                key={group.id}
+                href={`/groups/${group.id}`}
+                prefetch
+                className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
+              >
+                {/* <h4>[ {group.id} ]</h4> */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                </svg>
+
+
                 <h2>{group.name}</h2>
               </Link>
             )}
           </div>  
 
         </div>
+
+        
 
       </>
   );

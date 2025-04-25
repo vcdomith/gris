@@ -81,7 +81,7 @@ export default function NewPost() {
 
     return (
         <div 
-            className="flex flex-col bg-neutral-500/50 backdrop-blur-2xl w-[calc(80vw-6rem)] max-w-[calc(600px-6rem)] h-[80dvh] p-2 pt-1 border-2 border-slate-500/30 rounded-md overflow-hidden"
+            className="flex flex-col bg-neutral-500/50 backdrop-blur-2xl w-full md:w-[60dvw] lg:w-[40dvw] lg:max-w-[calc(600px-6rem)] h-[80dvh] p-2 pt-1 border-2 border-slate-500/30 rounded-md overflow-hidden"
         >
             <form 
                 action=""
