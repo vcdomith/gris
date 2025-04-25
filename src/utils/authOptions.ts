@@ -59,9 +59,11 @@ export const authOptions = {
 
         async signIn(
             {user, account}: 
-            {user: User, account: Account}
+            {user: User, account: Account | null}
         ) {
             console.log('signin', user, account);
+
+            if (!account) return false;
 
             const { email, image } = user
             const { refresh_token, providerAccountId } = account
@@ -126,7 +128,7 @@ export const authOptions = {
             }: { 
                 token: SpotifyToken, 
                 account: Account | null
-                session: Session
+                session?: Session
             }): Promise<SpotifyToken> {
 
             if (account) {
