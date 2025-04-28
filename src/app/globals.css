@@ -19,6 +19,20 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(-5%);
+  }
+  50% {
+    transform: translateY(5%);
+  }
+}
+
+/* Apply the animation to a class */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

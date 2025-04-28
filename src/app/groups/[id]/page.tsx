@@ -1,17 +1,15 @@
-import GradientComponent from "@/components/Gradient/Gradient";
 import Track from "@/components/Track/Track";
-import { ITrack } from "@/interfaces/Spotify";
 import { authOptions } from "@/utils/authOptions";
 import { dbAdmin } from "@/utils/db/supabase";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ReactNode, useMemo } from "react";
 import style from './groups.module.css'
 import crypto from 'crypto'
 
-import { format, isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns'
+import { isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns'
+import EmptyMessage from "@/components/EmptyMessage/EmptyMessage";
 
 function groupPostsByDate(posts: PostDB[]): Record<string, PostDB[]> {
 
@@ -125,9 +123,6 @@ export default async function Group(
         .eq('id', id)
         .single()
 
-    const inviteToken = crypto.randomBytes(32).toString('hex')
-    console.log(inviteToken);
-
     const groupedPosts = (posts) ? groupPostsByDate(posts) : []
 
     return (
@@ -181,7 +176,9 @@ export default async function Group(
                         post={post}
                     />
                 )} */}
-                {Object.entries(groupedPosts).map(([label, group]) => 
+                {(posts && posts.length > 0)
+                ?
+                Object.entries(groupedPosts).map(([label, group]) => 
                     <div 
                         key={label}
                         className="flex flex-col gap-4"
@@ -191,7 +188,10 @@ export default async function Group(
                             <Post key={post.id} post={post}/>
                         )}
                     </div>
-                )}
+                )
+                :
+                <EmptyMessage message="Nenhum post foi criado no grupo ainda, crie um!" />
+                }
             </div>
           
         </div>

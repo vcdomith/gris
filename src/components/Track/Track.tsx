@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Post } from "../NewPost/NewPost";
 
-export default function Track({ track }: { track: Omit<Post, 'message'> }) {
+export default function Track({ track }: { track: Omit<Post, 'message' | 'spotify_id'> }) {
 
     return (
         <span 

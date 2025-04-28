@@ -7,20 +7,36 @@ import { redirect } from 'next/navigation'
 
 const supabase = dbAdmin()
 
-export async function createGroup(formData: FormData) {
+export async function createElement(formData: FormData) {
 
     const inviteToken = crypto.randomBytes(32).toString('hex')
 
     const rawFormData = {
         name: formData.get('name') as string,
-        created_by: parseInt(formData.get('id') as string),
+        created_by: formData.get('email') as string,
         invite_token: inviteToken,
+        element: formData.get('element') as 'group' | 'playlist'
     }
+
+    const { data: user, error: userError } = await supabase
+        .schema('gris')
+        .from('users')
+        .select('id')
+        .eq('email', rawFormData.created_by)
+        .single()
+    if (!user || userError) {
+        throw new Error(userError?.message ?? 'Failed to fetch user')
+    }
+    const { created_by, element, ...data } = rawFormData
+    const table = element + 's' as 'groups' | 'playlists'
 
     const { data: groupData, error: groupError } = await supabase
         .schema('gris')
-        .from('groups')
-        .insert(rawFormData)
+        .from(table)
+        .insert({
+            ...data,
+            created_by: user.id
+        })
         .select()
 
     console.log(groupData, groupError);
@@ -30,7 +46,7 @@ export async function createGroup(formData: FormData) {
     }
 
     const groupId = groupData[0].id
-    const userId = rawFormData.created_by
+    const userId = user.id
 
     const { error: memberError } = await supabase
         .schema('gris')
@@ -46,7 +62,7 @@ export async function createGroup(formData: FormData) {
 
     console.log(rawFormData);
 
-    redirect('/')
+    revalidatePath(`/`)
 
 }
 

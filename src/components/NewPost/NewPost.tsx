@@ -14,6 +14,7 @@ export interface Post {
     album: string
     img_url: string
     uri: string
+    spotify_id: string
     message: string
 }
 
@@ -23,6 +24,7 @@ const DEFAULT_TRACK: Post = {
     album: "",
     img_url: "",
     uri: "",
+    spotify_id: "",
     message: "",
 }
 
@@ -75,6 +77,7 @@ export default function NewPost() {
             artist: track.artists.map((a: IArtist) => a.name).join(', '),
             album: track.album.name,
             img_url: track.album.images[0].url,
+            spotify_id: track.id,
             uri: track.uri,
         }))
     }
@@ -94,7 +97,7 @@ export default function NewPost() {
                     <h2>Adicionar música ao feed</h2>
                 </span>
 
-                <span className="flex gap-2 w-full items-center border-amber-50/10 focus-within:border-amber-50/20 transition-colors focus:outline-none bg-amber-50/10 text-neutral-200 placeholder:text-neutral-400 px-2 py-1 rounded-sm">
+                <span className="relative flex gap-2 w-full items-center border-amber-50/10 focus-within:border-amber-50/20 transition-colors focus:outline-none bg-amber-50/10 text-neutral-200 placeholder:text-neutral-400 px-2 py-1 rounded-sm">
 
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -108,17 +111,39 @@ export default function NewPost() {
                         className="w-full focus:outline-none"
                     />
 
-                    {isLoading&&
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`size-5 animate-spin`}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" 
-                    />
+                    {(debounced !== '')
+                    ?
+                    isLoading&&
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`absolute right-[0.5rem] size-5 animate-spin`}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
                     </svg>
+                    :
+                    <button 
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setDebounced('')
+                            setSearch('')
+                        }}
+                        className="absolute group right-[0.5rem] group bg-transparent transition-colors cursor-pointer rounded p-0.5"
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 stroke-amber-50/50 group-hover:stroke-amber-50/80 transition-colors">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                    </button>
+                    }
+
+                    {(debounced)&&
+                        <SearchResults 
+                            tracks={data?.tracks.items}
+                            handleTrackClick={handleTrackClick}
+                            loading={isLoading}
+                        />
                     }
 
                 </span>
 
 
-                {(isLoading)
+                {/* {(isLoading)
                 ?
                 <div>Loading...</div>
                 :
@@ -141,7 +166,7 @@ export default function NewPost() {
                         </div>
                     </span>
                 ))
-                }
+                } */}
 
                 <div className="flex flex-col gap-2">
                     <span>
@@ -226,4 +251,71 @@ export default function NewPost() {
         </div>
     )
 
+}
+
+function SearchResults({
+    tracks,
+    handleTrackClick,
+    loading
+}: {
+     tracks: ITrack[] | undefined, 
+     handleTrackClick: (track: ITrack) => void,
+     loading: boolean,
+}) {
+
+    return (
+        <span 
+            className="absolute top-[calc(32px+1rem)] left-0 w-full flex flex-col gap-2 border-2 border-neutral-200/20 bg-neutral-600 p-2 rounded shadow-4xl"
+        >
+            {!loading
+            ?
+            tracks?.map( track => 
+                <span 
+                    key={track.id} 
+                    onClick={() => handleTrackClick(track)}
+                    className=" flex gap-2 items-center p-2 border-2 border-amber-50/10 bg-amber-50/5 hover:bg-amber-50/10 cursor-pointer transition-colors rounded shadow-sm"
+                >
+                    <Image 
+                        src={track.album.images[0].url} 
+                        alt='track image'
+                        width={45}
+                        height={45}
+                        className="h-[45px] w-[45px] rounded"
+                    ></Image>
+                    <div className="flex flex-col">
+                        <p className="font-bold">{track.name}</p>
+                        <p className="text-sm text-neutral-400">{track.artists.map((a: IArtist) => a.name).join(', ')}</p>
+                    </div>
+                </span>
+                )
+                :
+                Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i}/>
+                ))
+            }
+        </span>
+    )
+
+}
+
+function Skeleton() {
+    return (
+        <span 
+            className="flex gap-2 items-center p-2 border-2 border-amber-50/30 rounded shadow-sm overflow-hidden">
+            
+            <div 
+                className="h-[45px] w-[45px] min-w-[45px] bg-neutral-500/50 rounded"
+            ></div>
+
+            
+            <div className="flex flex-col w-full">
+                
+                <div className="h-[1rem] w-[70%] rounded-sm bg-neutral-500/50 animate-pulse"></div>
+                
+                <div className="h-[1rem] w-[50%] rounded-sm mt-2 bg-neutral-500/30 animate-pulse"></div>
+                
+            </div>
+
+        </span>
+    )
 }
