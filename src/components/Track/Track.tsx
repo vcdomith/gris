@@ -6,7 +6,7 @@ export default function Track({ track }: { track: Omit<Post, 'message' | 'spotif
     return (
         <span 
             // className=" flex gap-2 items-center p-2 border-2 border-amber-50/10 bg-amber-50/5 hover:bg-amber-50/10 cursor-pointer transition-colors rounded shadow-sm"
-            className=" flex gap-2 items-center p-2 transition-colors rounded shadow-sm"
+            className=" flex gap-2 items-center p-2 transition-colors rounded"
         >
             <Image 
                 src={track.img_url} 

@@ -35,7 +35,7 @@ export default function RootLayout({
       >
         <GradientComponent />
         <Providers>
-        <div className="flex flex-col justify-center items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <div className="flex flex-col justify-center items-center justify-items-center min-h-screen p-4 md:p-8 pt-[52px] md:pt-[100px] gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
           {/* <AuthButton /> */}
           <Nav />
           <main className="flex flex-col gap-2 row-start-2 items-center sm:items-start">

@@ -68,6 +68,17 @@ export async function createElement(formData: FormData) {
 
 export async function createPost(newTrack: Post, email: string, group_id: string) {
 
+    const valid = Object.entries(newTrack).every( ([key, value]) => {
+        if (key !== 'message') {
+            return value !== ''
+        } 
+        return true
+    } )
+
+    if (!valid) {
+        throw new Error('Empty track is not valid')
+    }
+
     const { message, ...trackRest } = newTrack
 
     const { data: user, error: userError } = await supabase
