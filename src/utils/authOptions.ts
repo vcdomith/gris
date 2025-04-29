@@ -25,13 +25,13 @@ const refreshAccessToken = async (token: string): Promise<Partial<SpotifyToken> 
         })
 
         const data = await res.json()
-        console.log(data);
+        // console.log(data);
 
         if (!res.ok) throw new Error(data)
 
             return {
                 accessToken: data.access_token,
-                expiresAt: Date.now() + data.access_expires_in * 1000,
+                expiresAt: Date.now() + data.expires_in * 1000,
                 refreshToken: data.refresh_token ?? token,
             }
 
@@ -89,9 +89,9 @@ export const authOptions: AuthOptions = {
 
             if (!data) {
                 // Usuário não existe na tabela -> inserir 
-                console.log('no data exists');
+                // console.log('no data exists');
             
-                const { data: insertData, error: insertError } = await supabaseAdmin
+                const { error: insertError } = await supabaseAdmin
                     .schema('gris')
                     .from('users')
                     .insert({
@@ -101,7 +101,7 @@ export const authOptions: AuthOptions = {
                         image
                     })
 
-                console.log(insertData, insertError);
+                // console.log(insertData, insertError);
 
                 if (insertError) {
                     console.error('Supabase insert error:', insertError)
@@ -135,18 +135,26 @@ export const authOptions: AuthOptions = {
                 session?: Session
             }): Promise<SpotifyToken> {
 
+            // console.log(token, account);
+
             if (account) {
                 token.accessToken = account.access_token!;
                 token.providerAccountId = account.providerAccountId!;
                 token.refreshToken = account.refresh_token!;
-                token.expiresAt = account.expires_at! * 1000;
+                token.expiresAt = Date.now() + parseInt(account.expires_in as string)! * 1000;
+
+                if (!account.expires_in) {
+                    console.warn('Missing account.expires_in:', account);
+                }
 
                 // console.log(token, account);    
                 // console.log('account ok');
                 return token as SpotifyToken
             }
 
-            if (Date.now() < parseInt(token.exp as string) * 1000) {
+            
+            // console.log('token', token);
+            if (Date.now() < token.expiresAt) {
                 return token
             }
 
@@ -170,7 +178,7 @@ export const authOptions: AuthOptions = {
             }
 
             // console.log(token, account);
-            console.log('token', token);
+            // console.log('token', token);
 
             const refreshed =  await refreshAccessToken(refreshToken)
             if (!refreshed) {
