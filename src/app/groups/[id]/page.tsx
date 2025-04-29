@@ -10,6 +10,7 @@ import crypto from 'crypto'
 
 import { isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns'
 import EmptyMessage from "@/components/EmptyMessage/EmptyMessage";
+import ClientButton from "@/components/ClientButton/ClientButton";
 
 function groupPostsByDate(posts: PostDB[]): Record<string, PostDB[]> {
 
@@ -70,68 +71,134 @@ export default async function Group(
 
     const supabase = dbAdmin()
 
-    const { data: user, error: userError } = await supabase
-        .schema('gris')
-        .from('users')
-        .select('*')
-        .eq('email', session.user.email)
-        .single()
+    // const { data: user, error: userError } = await supabase
+    //     .schema('gris')
+    //     .from('users')
+    //     .select('*')
+    //     .eq('email', session.user.email)
+    //     .single()
 
-    if (userError || !user.id) {
-        console.error('Supabase could not fetch user')
-        redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
-    }
+    // if (userError || !user.id) {
+    //     console.error('Supabase could not fetch user')
+    //     redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
+    // }
 
-    const { error: memberError } = await supabase
-        .schema('gris')
-        .from('group_members')
-        .select('*')
-        .eq('group_id', id)
-        .eq('user_id', user.id)
+    // const { error: memberError } = await supabase
+    //     .schema('gris')
+    //     .from('group_members')
+    //     .select('*')
+    //     .eq('group_id', id)
+    //     .eq('user_id', user.id)
 
-    if (memberError) {
-        console.error('User is not a member of this group')
-        redirect('/')
-    }
-    // const { data: userWithMemebership, error: membershipError} = await supabase
+    // if (memberError) {
+    //     console.error('User is not a member of this group')
+    //     redirect('/')
+    // }
+    // const { data: userWithMembership, error: membershipError} = await supabase
     //     .schema('gris')
     //     .from('users')
     //     .select(`
     //         *,
-    //         group_members!inner(group_id)
+    //         group_members!inner(group_id, user_id)
     //     `)
     //     .eq('email', session.user.email)
     //     .eq('group_members.group_id', id)
     //     .single()
 
-    const { data: posts, error: postsError } = await supabase
+    // const { data: posts, error: postsError } = await supabase
+    //     .schema('gris')
+    //     .from('posts')
+    //     .select(`
+    //         *,
+    //         tracks:track_id (
+    //         id,
+    //         name,
+    //         artist,
+    //         album,
+    //         uri,
+    //         img_url
+    //         ),
+    //         users:user_id (
+    //         id,
+    //         spotify_id,
+    //         img_url
+    //         )
+    //     `)
+    //     .eq('group_id', id)
+    //     .order('id', { ascending: false })
+
+    // const { data: group, error: groupError }= await supabase
+    //     .schema('gris')
+    //     .from('groups')
+    //     .select('*')
+    //     .eq('id', id)
+    //     .single()
+
+    const { data: userWithMembership, error: userError } = await supabase
         .schema('gris')
-        .from('posts')
+        .from('users')
         .select(`
-            *,
-            tracks:track_id (
             id,
-            name,
-            artist,
-            album,
-            uri,
-            img_url
-            ),
-            users:user_id (
-            id,
-            spotify_id,
-            img_url
+            email,
+            group_members (
+                group_id
             )
         `)
-        .eq('group_id', id)
-        .order('id', { ascending: false })
-
-    const { data: group, error: groupError }= await supabase
-        .schema('gris')
-        .from('groups')
-        .select('*')
-        .eq('id', id)
+        .eq('email', session.user.email)
+        .eq('group_members.group_id', id)
         .single()
+    console.log(userWithMembership);
+
+    if (userError || !userWithMembership?.id) {
+        console.error('Supabase could not fetch user')
+        redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
+    }
+
+    const isMember = userWithMembership.group_members.length === 1
+    if (!isMember) {
+        console.error('Usuário não é membro do grupo')
+        redirect('/')
+    }
+
+    const { data: groupData, error: groupError } = await supabase
+    .schema('gris')
+    .from('groups')
+    .select(`
+        *,
+        group_members (
+            user_id,
+            users (
+                id,
+                spotify_id,
+                img_url
+            )
+        ),
+        posts (
+            *,
+            tracks:track_id (
+                id,
+                name,
+                artist,
+                album,
+                uri,
+                img_url
+            ),
+            users:user_id (
+                id,
+                spotify_id,
+                img_url
+            )
+        )
+    `)
+    .eq('id', id)
+    .single()
+
+    if (!groupData || groupError) {
+        console.error('Error fetching groupData from supabase', groupError)
+        redirect('/')
+    }
+
+    const { posts, name } = groupData
 
     const groupedPosts = (posts) ? groupPostsByDate(posts) : []
 
@@ -146,15 +213,26 @@ export default async function Group(
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                     </svg>   */}
 
-                    <h5>{group?.name}</h5>
+                    <h5>{name}</h5>
                 </div>
 
-                <button className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 cursor-pointer rounded px-1 focus:outline-none focus:bg-amber-50/20">
+                <ClientButton 
+                    action='invite'
+                    className='flex gap-2 items-center transition-colors hover:bg-amber-50/20 cursor-pointer rounded px-1 focus:outline-none focus:bg-amber-50/20'
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
                     </svg>
                     Convidar
-                </button>
+                </ClientButton>
+                {/* <button className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 cursor-pointer rounded px-1 focus:outline-none focus:bg-amber-50/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                    </svg>
+                    Convidar
+                </button> */}
+
+                <button></button>
 
             </span>
 
@@ -171,12 +249,12 @@ export default async function Group(
                 </button>
             </Link>
 
-            <span className="flex gap-2 items-center w-full pb-1 border-b-2 border-slate-300/30">
-            {/* <div>
+            {/* <span className="flex gap-2 items-center w-full pb-1 border-b-2 border-slate-300/30">
+            <div>
                 <div className="flex items-center justify-center w-[10px] h-[10px] rounded-4xl ml-auto bg-slate-200 text-slate-900 text-center shadow-2xl"></div>
-            </div> */}
-            {/* <h5 className="text-lg text-white/80">Semana 1: 13/04 - 19/04</h5> */}
-            </span>
+            </div>
+            <h5 className="text-lg text-white/80">Semana 1: 13/04 - 19/04</h5>
+            </span> */}
             <div 
                 className={`${style.overflow} flex flex-col gap-4`}
             >
