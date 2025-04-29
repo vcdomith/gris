@@ -93,6 +93,16 @@ export default async function Group(
         console.error('User is not a member of this group')
         redirect('/')
     }
+    // const { data: userWithMemebership, error: membershipError} = await supabase
+    //     .schema('gris')
+    //     .from('users')
+    //     .select(`
+    //         *,
+    //         group_members!inner(group_id)
+    //     `)
+    //     .eq('email', session.user.email)
+    //     .eq('group_members.group_id', id)
+    //     .single()
 
     const { data: posts, error: postsError } = await supabase
         .schema('gris')

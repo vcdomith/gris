@@ -1,6 +1,6 @@
 import { createClient } from './../../node_modules/@supabase/supabase-js/src/index';
 import { SpotifyToken } from "@/interfaces/Spotify";
-import { Account, Session, User } from "next-auth";
+import { Account, AuthOptions, Session, User } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { dbAdmin } from './db/supabase';
 
@@ -42,7 +42,7 @@ const refreshAccessToken = async (token: string): Promise<Partial<SpotifyToken> 
 
 }
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
     providers: [
         SpotifyProvider({
             clientId: process.env.SPOTIFY_CLIENT_ID!,
@@ -55,6 +55,9 @@ export const authOptions = {
         })
     ],
     secret: process.env.NEXTAUTH_SECRET,
+    session: {
+        strategy: 'jwt',
+    },
     callbacks: {
 
         async signIn(
@@ -106,6 +109,7 @@ export const authOptions = {
                 }
 
             } else if (data.refresh_token !== refresh_token) {
+                console.log('signin, token is diff and update');
                 // Refresh token mudou -> atualizar
                 const { error: updateError } = await supabaseAdmin
                     .schema('gris')
@@ -142,35 +146,49 @@ export const authOptions = {
                 return token as SpotifyToken
             }
 
-            if (Date.now() < (token.expiresAt as number)) {
+            if (Date.now() < parseInt(token.exp as string) * 1000) {
                 return token
+            }
+
+            let refreshToken = token.refreshToken;
+
+            if (!refreshToken) {
+
+                const { data, error } = await supabaseAdmin
+                    .schema('gris')
+                    .from('users')
+                    .select('refresh_token')
+                    .eq('spotify_id', token!.providerAccountId!)
+                    .single()
+
+                if (error || !data?.refresh_token) {
+                    console.error('Could not find refresh token in database:', error)
+                    return token;
+                }
+
+                refreshToken = data.refresh_token;
             }
 
             // console.log(token, account);
             console.log('token', token);
 
-            const { data, error } = await supabaseAdmin
-                .schema('gris')
-                .from('users')
-                .select('refresh_token')
-                .eq('spotify_id', token!.providerAccountId!)
-                .single()
-
-            if (error || !data?.refresh_token) {
-                console.error('Could not find refresh token in database:', error)
-                return token;
-            }
-
-            const refreshed =  await refreshAccessToken(data.refresh_token)
+            const refreshed =  await refreshAccessToken(refreshToken)
             if (!refreshed) {
                 return {...token, error: 'RefreshAccessTokenError'}
             }
 
-            if (refreshed.refreshToken && refreshed.refreshToken !== data.refresh_token) {
+            if (refreshed.refreshToken && refreshed.refreshToken !== token.refresh_token) {
+
+                token.refreshToken = refreshed.refreshToken;
+
+                console.log('jwt, token is diff and update');
                 const { error: updateError } = await supabaseAdmin
                     .schema('gris')
                     .from('users')
-                    .update({ refresh_token: refreshed.refreshToken})
+                    .update({ 
+                        refresh_token: refreshed.refreshToken ,
+                        updated_at: new Date().toISOString()
+                    })
                     .eq('spotify_id', token.providerAccountId)
 
                 if (updateError) {
@@ -178,7 +196,15 @@ export const authOptions = {
                 }
             }
 
-            return {...token, ...refreshed} as SpotifyToken
+            // return {...token, ...refreshed} as SpotifyToken
+            const result = {
+                ...token,
+                accessToken: refreshed.accessToken,
+                expiresAt: refreshed.expiresAt,
+                refreshToken: refreshed.refreshToken,
+            }
+            // console.log('result', result);
+            return result as SpotifyToken
 
         },
         async session({ 
