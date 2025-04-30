@@ -5,6 +5,7 @@ import { Providers } from "./providers/providers";
 import GradientComponent from "@/components/Gradient/Gradient";
 import AuthButton from "@/components/AuthButton";
 import Nav from "@/components/Nav/Nav";
+import Modal from "@/components/Modal/Modal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

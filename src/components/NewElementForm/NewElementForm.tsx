@@ -4,6 +4,11 @@ import { useSession } from "next-auth/react"
 import { redirect, useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
 
+const ELEMENT_MAP = {
+    group: 'Grupo',
+    playlist: 'Playlist'
+}
+
 export default function NewElementForm({
     element
 }: {
@@ -50,7 +55,7 @@ export default function NewElementForm({
 
                 <span className="border-b-2 border-amber-50/50">
                     {/* icone */}
-                    <h2>Criar nov{(element === 'group') ? 'o' : 'a'} {element}</h2>
+                    <h2>Criar nov{(element === 'group') ? 'o' : 'a'} {ELEMENT_MAP[element]}</h2>
                 </span>
 
                 <span className="flex flex-col gap-2 w-full justify-center">

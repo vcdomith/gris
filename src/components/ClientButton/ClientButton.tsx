@@ -1,13 +1,17 @@
 'use client'
 
-import { ReactNode } from "react"
+import { ReactNode, useState } from "react"
+import Modal from "../Modal/Modal"
+import { createPortal } from "react-dom"
+import { AnimatePresence } from "motion/react"
 
 type ValidActions = 'invite' | 'members'
 
 interface ClientButtonProps {
     children: ReactNode
     className?: string
-    action: ValidActions
+    
+    render: ReactNode
 }
 
 const fns: Record<ValidActions, (() => void)> = {
@@ -15,15 +19,26 @@ const fns: Record<ValidActions, (() => void)> = {
     members: () => alert('nilve')
 }
 
-export default function ClientButton({ children , className = '', action }: ClientButtonProps) {
+export default function ClientButton({ children , className = '', render }: ClientButtonProps) {
+
+    const [active, setActive] = useState(false)
 
     return (
+        <>
         <button
-            onClick={() => fns[action]()}
+            onClick={() => setActive(true)}
             className={className}
         >
             {children}
         </button>
+        {active&&
+        createPortal(
+            <Modal closeFn={() => setActive(false)}>
+                {active&& render}
+            </Modal>,
+            document.body,
+        )}
+        </>
     )
 
 }
