@@ -4,11 +4,6 @@ import { useSession } from "next-auth/react"
 import { redirect, useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
 
-const ELEMENT_MAP = {
-    group: 'Grupo',
-    playlist: 'Playlist'
-}
-
 export default function NewElementForm({
     element
 }: {
@@ -44,67 +39,60 @@ export default function NewElementForm({
     }
 
     return (
-        <div 
-            className="flex flex-col bg-neutral-500/50 backdrop-blur-2xl w-full min-w-full md:w-[60dvw] md:min-w-[60dvw] lg:w-[40dvw] lg:min-w-[calc(600px-6rem)] lg:max-w-[calc(300px-6rem)] h-fit p-2 pt-1 border-2 border-slate-500/30 rounded-md overflow-hidden"
+       
+        <form 
+            // action={createGroup}
+            onSubmit={(e) => handleSubmit(e)}
+            className="flex flex-col gap-4 h-full"
         >
-            <form 
-                // action={createGroup}
-                onSubmit={(e) => handleSubmit(e)}
-                className="flex flex-col gap-4 h-full"
-            >
 
-                <span className="border-b-2 border-amber-50/50">
-                    {/* icone */}
-                    <h2>Criar nov{(element === 'group') ? 'o' : 'a'} {ELEMENT_MAP[element]}</h2>
-                </span>
+            <span className="flex flex-col gap-2 w-full justify-center">
 
-                <span className="flex flex-col gap-2 w-full justify-center">
+                <input 
+                    autoComplete="off"
+                    type="text" 
+                    placeholder="Nome" 
+                    name="name"
+                    required
+                    className="border-2 border-amber-50/30 focus:border-amber-50/50 focus:outline-none px-2 rounded-sm my-4"
+                />
 
-                    <input 
-                        autoComplete="off"
-                        type="text" 
-                        placeholder="Nome" 
-                        name="name"
-                        required
-                        className="border-2 border-amber-50/30 focus:border-amber-50/50 focus:outline-none px-2 rounded-sm my-4"
+                <input 
+                    type="hidden" 
+                    value={session.user.email} 
+                    name="email"
+                />
+
+                <input 
+                    type="hidden" 
+                    value={element} 
+                    name="element"
+                />
+                    
+                <button
+                    className={`flex gap-2 justify-center items-center mt-auto ml-auto px-2 max-w-[200px] border-2 border-amber-50/20 rounded bg-amber-50/20
+                    hover:bg-amber-50/30 transition-colors cursor-pointer disabled:text-amber-50/20 disabled:cursor-default disabled:bg-transparent disabled:border-amber-50/15 ${submitting ? 'animate-pulse' : ''}`}
+                    type="submit"
+                    disabled={submitting}
+                >
+                    {submitting
+                ? 
+                <>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`size-5 animate-spin`}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" 
                     />
+                    </svg>
+                    Criando...
+                </>
+                : `Criar`
+                }
+                </button>
 
-                    <input 
-                        type="hidden" 
-                        value={session.user.email} 
-                        name="email"
-                    />
+            </span>
+    
 
-                    <input 
-                        type="hidden" 
-                        value={element} 
-                        name="element"
-                    />
-                        
-                    <button
-                        className={`flex gap-2 justify-center items-center mt-auto ml-auto px-2 max-w-[200px] border-2 border-amber-50/20 rounded bg-amber-50/20
-                        hover:bg-amber-50/30 transition-colors cursor-pointer disabled:text-amber-50/20 disabled:cursor-default disabled:bg-transparent disabled:border-amber-50/15 ${submitting ? 'animate-pulse' : ''}`}
-                        type="submit"
-                        disabled={submitting}
-                    >
-                        {submitting
-                    ? 
-                    <>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`size-5 animate-spin`}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" 
-                        />
-                        </svg>
-                        Criando...
-                    </>
-                    : `Criar`
-                    }
-                    </button>
-
-                </span>
-        
-
-            </form>
-        </div>
+        </form>
+  
     )
 
 }

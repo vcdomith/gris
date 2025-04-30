@@ -6,6 +6,7 @@ import GradientComponent from "@/components/Gradient/Gradient";
 import AuthButton from "@/components/AuthButton";
 import Nav from "@/components/Nav/Nav";
 import Modal from "@/components/Modal/Modal";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster />
         <GradientComponent />
         <Providers>
         <div className="flex flex-col justify-center items-center justify-items-center min-h-screen p-4 md:p-8 pt-[52px] md:pt-[100px] gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

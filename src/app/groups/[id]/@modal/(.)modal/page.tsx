@@ -4,7 +4,7 @@ import NewPost from "@/components/NewPost/NewPost";
 export default function NewSongModalRoute() {
 
     return (
-        <Modal>
+        <Modal header="Adicionar música ao feed">
             <NewPost />
         </Modal>
     )

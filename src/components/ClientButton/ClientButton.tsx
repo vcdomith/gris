@@ -1,25 +1,19 @@
 'use client'
 
-import { ReactNode, useState } from "react"
+import { ComponentType, Dispatch, ReactNode, SetStateAction, useState } from "react"
 import Modal from "../Modal/Modal"
 import { createPortal } from "react-dom"
-import { AnimatePresence } from "motion/react"
-
-type ValidActions = 'invite' | 'members'
 
 interface ClientButtonProps {
     children: ReactNode
     className?: string
+    title?: string
     
+    // RenderComponent: ComponentType<{ close: () => void }>
     render: ReactNode
 }
 
-const fns: Record<ValidActions, (() => void)> = {
-    invite: () => alert('aaaa'),
-    members: () => alert('nilve')
-}
-
-export default function ClientButton({ children , className = '', render }: ClientButtonProps) {
+export default function ClientButton({ children , className = '', render, title = '' }: ClientButtonProps) {
 
     const [active, setActive] = useState(false)
 
@@ -33,7 +27,11 @@ export default function ClientButton({ children , className = '', render }: Clie
         </button>
         {active&&
         createPortal(
-            <Modal closeFn={() => setActive(false)}>
+            <Modal 
+                closeFn={() => setActive(false)}
+                header={(title !== '')? title : ''}
+                size='small'
+            >
                 {active&& render}
             </Modal>,
             document.body,
