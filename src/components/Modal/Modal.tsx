@@ -16,16 +16,24 @@ export default function Modal(
     const handleClick = (e: MouseEvent<HTMLElement, globalThis.MouseEvent>) => {
 
         if((e.target as HTMLElement) === backdropRef.current!) {
-            if(closeFn) {
-                setVisible(false)
-                return
-            }
+            // if(closeFn) {
+            //     setVisible(false)
+            //     return
+            // }
             setVisible(false)
-            router.back()
+            // router.back()
         }
         // if (e.target)
         // router.back()
 
+    }
+
+    const exitCompleteHandler = () => {
+        if(closeFn) {
+            closeFn()
+            return
+        }
+        router.back()
     }
 
     useEffect(() => {
@@ -51,8 +59,10 @@ export default function Modal(
 
     }, [closeFn, router])
 
-        return (
-        <AnimatePresence onExitComplete={closeFn}>
+
+
+    return (
+        <AnimatePresence onExitComplete={exitCompleteHandler}>
         {visible&&
         <motion.div 
             className="flex justify-center items-center fixed top-0 left-0 w-full h-dvh z-998"
