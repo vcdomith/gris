@@ -15,7 +15,6 @@ export default function Invite({ token }: { token: string } ) {
         try {
             await navigator.clipboard.writeText(url)
             toast.success('Link copiado com sucesso!')
-            close()
         } catch (error) {
             toast.error('Erro ao copiar')
         }

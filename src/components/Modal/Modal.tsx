@@ -3,14 +3,7 @@ import { useRouter } from "next/navigation";
 import React, { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from 'motion/react'
 import { useModal } from "@/app/contexts/ModalContext"
-
-
-type Sizes = 'small' | 'large'
-
-const SIZE_CLASS: Record<Sizes, string> = {
-    small: "flex flex-col gap-4 p-2 pt-1 rounded bg-neutral-500/50 border-2 border-neutral-500/20 backdrop-blur-lg",
-    large: "flex flex-col bg-neutral-500/50 backdrop-blur-2xl w-full min-w-full md:w-[60dvw] md:min-w-[60dvw] lg:w-[40dvw] lg:min-w-[40dvw] lg:max-w-[calc(600px-6rem)] h-[80dvh] p-2 pt-1 border-2 border-slate-500/30 rounded-md overflow-hidden"
-}
+import Container, { Sizes } from "../Container/Container";
 
 export default function Modal(
     { 
@@ -61,6 +54,10 @@ export default function Modal(
 
     useEffect(() => {
         
+        if (visible) {
+            document.body.style.overflow = 'hidden'
+        }
+
         const controller = new AbortController()
 
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,32 +75,39 @@ export default function Modal(
         
         return () => {
             controller.abort()
+            document.body.style.overflow = ''
         }
 
-    }, [closeFn, router])
+    }, [closeFn, router, visible])
 
     return (
         <AnimatePresence onExitComplete={exitCompleteHandler}>
         {visible&&
         <motion.div 
-            className="flex justify-center items-center fixed top-0 left-0 w-full h-dvh z-998"
+            className="flex justify-center items-center fixed top-0 left-0 w-[calc(100dvw] md:w-[calc(100dvw-1rem)] h-dvh z-998 px-2"
             exit={{ opacity: 0 }}
         >
             <motion.section 
                 ref={backdropRef}
-                className="flex justify-center items-center fixed top-0 left-0 w-full h-full bg-neutral-900/50 backdrop-blur-sm transition z-998 cursor-alias"
+                className="flex justify-center items-center fixed top-0 left-0 w-[calc(100dvw] md:w-[calc(100dvw)] pr-[1rem] h-dvh bg-neutral-900/50 backdrop-blur-sm transition z-998 cursor-alias"
                 onClick={(e) => handleClick(e)}
 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
-                <div className="relative flex items-center justify-center w-fit h-fit z-1000 cursor-default">
-                    <div className={SIZE_CLASS[size]}>
-                    <ModalHeader header={header} close={() => setVisible(false)} />
+                <Container 
+                    size={size} 
+                    header={
+                        <ModalHeader 
+                            header={header} 
+                            loading={loading}
+                            close={() => setVisible(false)}
+                        />
+                    } 
+                >
                     {children}
-                    </div>
-                </div>
+                </Container>
             </motion.section>
         </motion.div>
         }
@@ -114,7 +118,7 @@ export default function Modal(
 }
 
 
-const ModalHeader = ({ header, close }: { header: string, close: () => void }) => {
+const ModalHeader = ({ header, loading, close }: { header: string, loading: boolean, close: () => void }) => {
 
     if (!header) return null;
 
@@ -122,6 +126,7 @@ const ModalHeader = ({ header, close }: { header: string, close: () => void }) =
         <span className="flex justify-between border-b-2 border-amber-50/20">
             <h3>{header}</h3>
             <button
+                disabled={loading}
                 onClick={() => close()}
                 className="group cursor-pointer p-0.5"
             >

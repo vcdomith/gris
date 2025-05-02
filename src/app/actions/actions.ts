@@ -95,7 +95,7 @@ export async function createPost(newTrack: Post, email: string, group_id: string
     const { data: track, error: trackError } = await supabase
         .schema('gris')
         .from('tracks')
-        .insert(trackRest)
+        .upsert(trackRest, { onConflict: 'spotify_id' })
         .select()
         .single()
 
