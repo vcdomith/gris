@@ -27,10 +27,25 @@ export default async function Home() {
     .schema('gris')
     .rpc('get_groups', {
       spotify_id: session.token.sub as string
-    })
+  })
 
   if (groupsError) {
-      console.error('Supabase groups query error', groupsError)
+    console.error('Supabase groups query error', groupsError)
+  }
+
+  const {data: playlists, error: playlistsError} = await supabase
+    .schema('gris')
+    .from('playlists')
+    .select('*')
+
+  // const { data: playlists, error: playlistsError } = await supabase
+  //   .schema('gris')
+  //   .rpc('get_playlists', {
+  //     spotify_id: session.token.sub as string
+  // })
+
+  if (playlistsError) {
+    console.error('Supabase playlists query error', playlistsError)
   }
 
   console.log('Home rendered at', new Date().toISOString());
@@ -90,7 +105,9 @@ export default async function Home() {
               </Link>
             )
             :
-            <EmptyMessage message="Você não é membro de nenhum grupo crie um ou peça um convite!" />
+            <div className="p-4">
+              <EmptyMessage message="Você não é membro de nenhum grupo crie um ou peça um convite!" />
+            </div>
             }
           </div>  
 
@@ -105,9 +122,9 @@ export default async function Home() {
           </span>
 
           <div className="flex flex-col gap-2">
-            {(groups && groups?.length > 0)
+            {(playlists && playlists?.length > 0)
               ?
-              groups?.map(group => 
+              playlists?.map(group => 
                 <Link 
                   key={group.id}
                   href={`/groups/${group.id}`}
@@ -122,7 +139,9 @@ export default async function Home() {
                 </Link>
               )
               :
-              <EmptyMessage message="Você não é membro de nenhum grupo crie um ou peça um convite!" />
+              <div className="p-4">
+                <EmptyMessage message="Você não é membro de nenhuma playlist crie uma ou peça um convite!" />
+              </div>
               }
           </div>  
 

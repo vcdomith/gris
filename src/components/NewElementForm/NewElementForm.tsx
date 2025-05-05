@@ -48,7 +48,7 @@ export default function NewElementForm({
 
             <span className="flex flex-col gap-2 w-full justify-center px-2 pb-4">
 
-                <label htmlFor="name">Nome grupo:</label>
+                <label htmlFor="name">Nome {(element === 'group') ? 'Grupo' : 'Playlist'}:</label>
                 <input 
                     autoComplete="off"
                     type="text" 
