@@ -84,12 +84,12 @@ export default function Modal(
         <AnimatePresence onExitComplete={exitCompleteHandler}>
         {visible&&
         <motion.div 
-            className="flex justify-center items-center fixed top-0 left-0 w-[calc(100dvw] md:w-[calc(100dvw-1rem)] h-dvh z-998 px-2"
+            className="flex justify-center items-center fixed top-0 left-0 w-[calc(100dvw)] md:w-[calc(100dvw-1rem)] h-dvh z-998 px-2"
             exit={{ opacity: 0 }}
         >
             <motion.section 
                 ref={backdropRef}
-                className="flex justify-center items-center fixed top-0 left-0 w-[calc(100dvw] md:w-[calc(100dvw)] pr-[1rem] h-dvh bg-neutral-900/50 backdrop-blur-sm transition z-998 cursor-alias"
+                className="flex justify-center items-center fixed top-0 left-0 w-[calc(100dvw)] md:w-[calc(100dvw)] lg:pr-[1rem] h-dvh bg-neutral-900/50 backdrop-blur-sm transition z-998 cursor-alias"
                 onClick={(e) => handleClick(e)}
 
                 initial={{ opacity: 0 }}
