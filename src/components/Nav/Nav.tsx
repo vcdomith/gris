@@ -6,6 +6,7 @@ import { authOptions } from "@/utils/authOptions";
 import Image from "next/image";
 import { dbAdmin } from "@/utils/db/supabase";
 import { redirect } from "next/navigation";
+import Groovy from "../Groovy/Groovy";
 
 export default async function Nav() {
 
@@ -34,10 +35,7 @@ export default async function Nav() {
                 className="flex items-center"
             >
             <div className="flex gap-1 items-center">
-                <svg width="35" height="35" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" clipRule="evenodd" d="M17 81.5V45C17 26.7746 31.7746 12 50 12C68.2254 12 83 26.7746 83 45V81.5C83 87.5751 78.0751 92.5 72 92.5C65.9249 92.5 61 87.5751 61 81.5C61 87.5751 56.0751 92.5 50 92.5C43.9249 92.5 39 87.5751 39 81.5C39 87.5751 34.0751 92.5 28 92.5C21.9249 92.5 17 87.5751 17 81.5ZM65 38C59.4772 38 55 42.4772 55 48H59C59 48 59 42 65 42C71 42 71 48 71 48H75C75 42.4772 70.5228 38 65 38ZM35 38C29.4772 38 25 42.4772 25 48H29C29 48 29 42 35 42C41 42 41 48 41 48H45C45 42.4772 40.5228 38 35 38ZM59 60H35C35 60 35 70 47 70C59 70 59 60 59 60Z" fill="#2D28C3" className="fill-amber-50"/>
-                </svg>
-
+                <Groovy />
                 <div className="flex flex-col">
                     <h1 className="text-3xl text-amber-50">Gris</h1>
                     {/* <h3 className="text-sm text-amber-50/90">~ groovy in spirit ~</h3> */}
@@ -54,7 +52,9 @@ export default async function Nav() {
                     height={35}
                 ></Image>
                 :
-                <div className="flex justify-center items-center w-[35px] h-[35px] rounded-4xl bg-slate-800 select-none">{user?.spotify_id[0].toUpperCase()}</div>
+                <div className="flex justify-center items-center w-[35px] h-[35px] rounded-4xl bg-slate-800 select-none overflow-hidden">
+                    {user?.spotify_id[0].toUpperCase()}
+                </div>
                 }
                 {/* <h3>{user?.spotify_id}</h3> */}
                 {/* <AuthButton /> */}

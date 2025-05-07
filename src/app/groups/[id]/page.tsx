@@ -209,10 +209,21 @@ export default async function Group(
                     prefetch
                     className="flex justify-center items-center gap-1 w-full rounded-md py-1 bg-slate-300 hover:bg-slate-200 text-slate-800 cursor-pointer active:bg-slate-400 transition-colors"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                    </svg> */}
+                    <span className="relative w-[20px] h-[20px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-3 stroke-neutral-800 absolute top-[0px] left-[-0.25rem]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5 stroke-neutral-800 absolute top-[0px] left-[0px]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
+                        </svg>
+                    </span>
+                    <p>
                     Adicionar música
+                    </p>
                 </Link>
 
                 <div 
@@ -249,27 +260,8 @@ export default async function Group(
 function Post({ post }: { post: PostDB }) {
 
     return (
-    <div className="flex flex-col bg-slate-400/20 md:bg-slate-500/50 rounded-md shadow-2xl">
-{/* 
-        <span className="flex gap-2 items-center py-2 mx-2 pl-[27.5px] border-b-2 border-slate-400/30">
-            {(post.users.img_url !== 'NULL')
-            ?
-            <Image
-                src={post.users.img_url!}
-                alt={`${post.users.spotify_id} image`}
-                width={25}
-                height={25}
-            ></Image>
-            :
-            <div className="flex justify-center items-center w-[25px] h-[25px] rounded-4xl bg-slate-800 text-sm/snug">{post.users.spotify_id[0].toUpperCase()}</div>
-            }
-            <div className="flex">
-            <h3 className="text-slate-50">{post.users.spotify_id}</h3>
-            <h5 className="text-xs text-slate-300">{new Date(post.created_at).toLocaleString()}</h5>
-            </div>
-        </span> */}
-    
-        
+    <div className="flex flex-col bg-slate-400/20 md:bg-slate-500/50 rounded-md shadow-2xl">    
+
         <Track 
             img={post.tracks.img_url} 
             name={post.tracks.name} 
