@@ -1,5 +1,5 @@
 'use client'
-import { createElement } from "@/app/actions/actions"
+import { createElement, createPlaylist } from "@/app/actions/actions"
 import { useSession } from "next-auth/react"
 import { redirect, useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
@@ -32,7 +32,11 @@ export default function NewElementForm({
             return 
         }
 
-        await createElement(formData)
+        if (element === 'group') {
+            await createElement(formData)
+        } else {
+            await createPlaylist(formData)   
+        }
         setSubmitting(false)
         router.back()
 
@@ -51,12 +55,24 @@ export default function NewElementForm({
                 <label htmlFor="name">Nome {(element === 'group') ? 'Grupo' : 'Playlist'}:</label>
                 <input 
                     autoComplete="off"
+                    autoCorrect="off"
                     type="text" 
                     placeholder="Nome" 
                     name="name"
                     required
                     className="border-2 border-amber-50/30 focus:border-amber-50/50 focus:outline-none px-2 rounded-sm"
                 />
+
+                {(element === 'playlist')&&
+                <input 
+                    autoComplete="off"
+                    autoCorrect="off"
+                    type="text" 
+                    placeholder="Descrição (opcional)" 
+                    name="desc"
+                    className="border-2 border-amber-50/30 focus:border-amber-50/50 focus:outline-none px-2 rounded-sm"
+                />
+                }
 
                 <input 
                     type="hidden" 

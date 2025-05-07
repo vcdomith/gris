@@ -33,10 +33,14 @@ export default async function Home() {
     console.error('Supabase groups query error', groupsError)
   }
 
-  const {data: playlists, error: playlistsError} = await supabase
+  const { data: playlists, error: playlistsError } = await supabase
     .schema('gris')
     .from('playlists')
-    .select('*')
+    .select(`
+      *,
+      users (*)
+      `)
+    .eq('users.spotify_id', session.token.sub as string)
 
   // const { data: playlists, error: playlistsError } = await supabase
   //   .schema('gris')
@@ -64,7 +68,7 @@ export default async function Home() {
 
   return (
       <>
-        <div className="flex flex-col gap-2 w-full md:w-[60dvw] lg:w-[40dvw] bg-amber-50/20 backdrop-blur-lg p-2 rounded">
+        <div className="flex flex-col gap-2 w-full min-w-[calc(100vw-2rem)] md:w-[60dvw] md:min-w-[60dvw] lg:w-[40dvw] lg:min-w-[40dvw] bg-amber-50/20 backdrop-blur-lg p-2 rounded">
 
           <span className="flex justify-between border-b-1 border-b-amber-50/50 pb-1">
               <h3>Grupos</h3>
@@ -124,10 +128,10 @@ export default async function Home() {
           <div className="flex flex-col gap-2">
             {(playlists && playlists?.length > 0)
               ?
-              playlists?.map(group => 
+              playlists?.map(playlist => 
                 <Link 
-                  key={group.id}
-                  href={`/groups/${group.id}`}
+                  key={playlist.id}
+                  href={`/playlists/${playlist.id}`}
                   prefetch
                   className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
                 >
@@ -135,7 +139,7 @@ export default async function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                   </svg>
 
-                  <h2>{group.name}</h2>
+                  <h2>{playlist.name}</h2>
                 </Link>
               )
               :

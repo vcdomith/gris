@@ -123,7 +123,7 @@ export interface IArtist {
 	popularity?: number;
   }
   
-  interface Playlist {
+interface Playlist {
 	collaborative: boolean;
 	description: string;
 	external_urls: ExternalUrls;
@@ -132,28 +132,28 @@ export interface IArtist {
 	images: Image[];
 	name: string;
 	owner: {
-	  external_urls: ExternalUrls;
-	  href: string;
-	  id: string;
-	  type: string;
-	  uri: string;
-	  display_name: string;
+		external_urls: ExternalUrls;
+		href: string;
+		id: string;
+		type: string;
+		uri: string;
+		display_name: string;
 	};
 	public: boolean;
 	snapshot_id: string;
 	tracks: {
-	  href: string;
-	  total: number;
+		href: string;
+		total: number;
 	};
 	type: string;
 	uri: string;
-  }
-  
-  interface Show {
+}
+
+interface Show {
 	available_markets: string[];
 	copyrights: {
-	  text: string;
-	  type: string;
+		text: string;
+		type: string;
 	}[];
 	description: string;
 	html_description: string;
@@ -170,9 +170,9 @@ export interface IArtist {
 	type: string;
 	uri: string;
 	total_episodes: number;
-  }
-  
-  interface Episode {
+}
+
+interface Episode {
 	audio_preview_url: string;
 	description: string;
 	html_description: string;
@@ -190,24 +190,82 @@ export interface IArtist {
 	release_date: string;
 	release_date_precision: string;
 	resume_point?: {
-	  fully_played: boolean;
-	  resume_position_ms: number;
+		fully_played: boolean;
+		resume_position_ms: number;
 	};
 	type: string;
 	uri: string;
-  }
-  
-  interface ExternalUrls {
+}
+
+interface ExternalUrls {
 	spotify: string;
-  }
-  
-  interface Restrictions {
+}
+
+interface Restrictions {
 	reason: string;
-  }
-  
-  interface Image {
+}
+
+interface Image {
 	url: string;
 	height: number;
 	width: number;
-  }
+}
   
+export interface SpotifyPlaylistResponse {
+	collaborative: boolean;
+	description: string;
+	external_urls: {
+		spotify: string;
+	};
+	href: string;
+	id: string;
+	images: {
+		url: string;
+		height: number;
+		width: number;
+	}[];
+	name: string;
+	owner: {
+		external_urls: {
+		spotify: string;
+		};
+		href: string;
+		id: string;
+		type: string;
+		uri: string;
+		display_name: string;
+	};
+	public: boolean;
+	snapshot_id: string;
+	tracks: {
+		href: string;
+		limit: number;
+		next: string | null;
+		offset: number;
+		previous: string | null;
+		total: number;
+		items: PlaylistTrack[];
+	};
+	type: string;
+		uri: string;
+}
+
+
+interface PlaylistTrack {
+	added_at: string
+	added_by: {
+		external_urls: {
+			spotify: string
+		}
+		href: string
+		id: string
+		type: string
+		uri: string
+	}
+	is_local: boolean
+	primary_color: string | null
+	track: ITrack
+	video_thumbnail: {
+		url: string | null
+	}
+}

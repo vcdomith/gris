@@ -193,29 +193,16 @@ export default async function Group(
                     prefetch
                     className="flex justify-center items-center gap-1 w-full rounded-md py-1 bg-slate-300 hover:bg-slate-200 text-slate-800 cursor-pointer active:bg-slate-400 transition-colors"
                 >
-                    {/* <button className="flex justify-center items-center gap-1 w-full rounded-md bg-slate-300 text-slate-800 cursor-pointer active:bg-slate-400 transition-colors"> */}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Adicionar música
-                    {/* </button> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Adicionar música
                 </Link>
 
-                {/* <span className="flex gap-2 items-center w-full pb-1 border-b-2 border-slate-300/30">
-                <div>
-                    <div className="flex items-center justify-center w-[10px] h-[10px] rounded-4xl ml-auto bg-slate-200 text-slate-900 text-center shadow-2xl"></div>
-                </div>
-                <h5 className="text-lg text-white/80">Semana 1: 13/04 - 19/04</h5>
-                </span> */}
                 <div 
                     className={`${style.overflow} flex flex-col gap-4`}
                 >
-                    {/* {posts?.map( post => 
-                        <Post 
-                            key={post.id}
-                            post={post}
-                        />
-                    )} */}
+
                     {(posts && posts.length > 0)
                     ?
                     Object.entries(groupedPosts).map(([label, group]) => 
@@ -265,7 +252,11 @@ function Post({ post }: { post: PostDB }) {
             </div>
         </span>
 
-        <Track track={post.tracks}/>
+        <Track 
+            img={post.tracks.img_url} 
+            name={post.tracks.name} 
+            artist={post.tracks.artist}
+        />
     
         {(post.message !== '')&&
         <div className="flex items-start justify-start p-2 pl-0 m-2 mt-0 bg-neutral-50/10 rounded">
