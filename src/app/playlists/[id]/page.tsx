@@ -88,15 +88,14 @@ export default async function Playlist({ params }: { params: Params }) {
      
         <>
         <ButtonWatcher groupId={id} />        
-        <div className="flex flex-col gap-4 rounded-lg w-full bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] lg:w-[40dvw]">
+        <div className="flex flex-col gap-4 rounded-lg w-full bg-amber-50/10 md:bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] lg:w-[40dvw]">
            
             <span className="flex gap-2 justify-between items-center w-full pb-1 border-b-2 border-slate-300/30">
             
-                <div className="flex gap-1 items-center">
-                    <span className="flex gap-1 items-center">
+                <div className="flex gap-0.5 items-center overflow-hidden">
+                    <span className="flex gap-0.5 items-center">
                         <Link 
                             href={`/`}
-                            id='observed' 
                             prefetch
                             className="text-amber-50/30"
                         >
@@ -106,7 +105,7 @@ export default async function Playlist({ params }: { params: Params }) {
                         <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" className="stroke-amber-50/30"/>
                         </svg>
                     </span>
-                    <h5>{name}</h5>
+                    <h5 className="truncate">{name}</h5>
                 </div>
 
             </span>
@@ -125,7 +124,7 @@ export default async function Playlist({ params }: { params: Params }) {
 
             <div className="">
 
-                <ul className="flex flex-col gap-2 p-4 h-full bg-neutral-800/40 inset-shadow-sm rounded">
+                <ul className="flex flex-col gap-4 h-full md:bg-neutral-800/40 md:p-4 inset-shadow-sm rounded">
                 
                 {(playlist.tracks.items && playlist.tracks.items.length > 0)
                 ?
@@ -141,10 +140,12 @@ export default async function Playlist({ params }: { params: Params }) {
                             artist={track.artists.map((a: IArtist) => a.name).join(', ')}
                             size={55}
                             omitPadding
-                            author={ <Author 
-                                id={added_by.id}
-                                playlist_members={playlist_members}
-                            />}
+                            author={ 
+                                <Author 
+                                    id={added_by.id}
+                                    playlist_members={playlist_members}
+                                />
+                            }
                         />
                         {/* <Author 
                             id={added_by.id}
@@ -197,7 +198,7 @@ function Author({ id, playlist_members }: { id: string, playlist_members: Playli
                 :
                 <div className="flex justify-center items-center w-[20px] h-[20px] rounded-4xl text-xs bg-slate-800 select-none">{user?.spotify_id[0].toUpperCase()}</div>
                 }
-                <h3 className="text-sm text-amber-50/40">{user.spotify_id}</h3> 
+                <h3 className="text-sm text-amber-50/50">{user.spotify_id}</h3> 
                 </ span>
             )
 

@@ -26,9 +26,9 @@ export default function Track({ img, name, artist, size = 45, author, omitPaddin
                 height={size}
                 className={`h-[${size}px] w-[${size}px] rounded`}
             ></Image>
-            <div className="flex flex-col">
-                <p className="font-bold">{name}</p>
-                <p className="text-sm text-neutral-300/80">{artist}</p>
+            <div className="flex flex-col overflow-hidden">
+                <p className="text-neutral-100 truncate">{name}</p>
+                <p className="text-sm text-neutral-300/80 truncate">{artist}</p>
                 {author}
             </div>
         </span>
