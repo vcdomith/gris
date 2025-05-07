@@ -88,7 +88,7 @@ export default async function Playlist({ params }: { params: Params }) {
      
         <>
         <ButtonWatcher groupId={id} />        
-        <div className="flex flex-col gap-4 rounded-lg w-full bg-amber-50/10 md:bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] lg:w-[40dvw]">
+        <div className="flex flex-col gap-4 rounded-lg w-full min-w-[calc(100vw-2rem)] bg-amber-50/10 md:bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] md:min-w-[60dvw] lg:w-[40dvw] lg:min-w-[40dvw]">
            
             <span className="flex gap-2 justify-between items-center w-full pb-1 border-b-2 border-slate-300/30">
             
@@ -138,7 +138,7 @@ export default async function Playlist({ params }: { params: Params }) {
                             img={track.album.images[0].url} 
                             name={track.name} 
                             artist={track.artists.map((a: IArtist) => a.name).join(', ')}
-                            size={55}
+                            size={60}
                             omitPadding
                             author={ 
                                 <Author 
@@ -186,7 +186,7 @@ function Author({ id, playlist_members }: { id: string, playlist_members: Playli
             const hasImage = user.img_url && user.img_url !== 'NULL'
 
             return (
-                <span key={user.spotify_id} className="flex gap-1 items-center">
+                <span key={user.spotify_id} className="flex gap-1 items-center pt-1">
                 {(isAuthor && hasImage)
                 ?
                 <Image
