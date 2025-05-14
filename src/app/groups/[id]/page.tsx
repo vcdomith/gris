@@ -146,7 +146,7 @@ export default async function Group(
         redirect('/')
     }
 
-    const { posts, name, group_members, invite_token } = groupData
+    const { posts, name, group_members, invite_token, created_at, created_by } = groupData
 
     console.log(group_members);
 
@@ -154,7 +154,7 @@ export default async function Group(
 
     return (
         <>
-            <ButtonWatcher groupId={id} />
+            <ButtonWatcher href={`/groups/${id}/modal`} />
             <div className="flex flex-col gap-4 rounded-lg w-full bg-amber-50/10 md:bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] lg:w-[40dvw]">
             
                 <span className="flex gap-2 justify-between items-center w-full pb-1 border-b-2 border-slate-300/30">
@@ -189,9 +189,14 @@ export default async function Group(
                             </p>
                         </ClientButton>
 
-                        <ClientButton 
-                            render={<Invite token={invite_token}/>}
-                            title='Criar convite para grupo:'
+                        <ClientButton
+                            render={
+                                <GroupDetails 
+                                    created_at={created_at}
+                                    created_by={created_by}
+                                    members={group_members}
+                                />}
+                            title={`Detalhes grupo:`}
                             className='flex gap-1 items-center text-sm transition-colors hover:bg-amber-50/20 cursor-pointer rounded px-1 py-0.5 focus:outline-none focus:bg-amber-50/20'
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
@@ -209,9 +214,6 @@ export default async function Group(
                     prefetch
                     className="flex justify-center items-center gap-1 w-full rounded-md py-1 bg-slate-300 hover:bg-slate-200 text-slate-800 cursor-pointer active:bg-slate-400 transition-colors"
                 >
-                    {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg> */}
                     <span className="relative w-[20px] h-[20px]">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-3 stroke-neutral-800 absolute top-[0px] left-[-0.25rem]">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -303,16 +305,79 @@ function Post({ post }: { post: PostDB }) {
 
 }
 
-function MemberList({ members }: { members: GroupMember[] }) {
+interface GroupDetailsProps {
+    created_at: string 
+    created_by: number 
+    members: GroupMember[] 
+}
+
+function GroupDetails({ created_at, created_by, members }: GroupDetailsProps) {
+
+    const users = members.filter( member => member.user_id === created_by )[0]
 
     return (
-        <ul>
-            {members.map( member => 
-                <li key={member.user_id}>
-                    {member.users.spotify_id}
-                </li>
-            )}
-        </ul>
+        <section>
+            <span className="flex gap-2">
+                <h3>Criado por:</h3>
+                <div className="flex flex-col gap-2">
+                    <User member={users}/>
+                    {/* <span className="flex gap-1 items-center border-slate-400/30 pt-1">
+                        {(author.img_url !== 'NULL')
+                        ?
+                        <Image
+                            src={author.img_url!}
+                            alt={`${author.spotify_id} image`}
+                            width={25}
+                            height={25}
+                        ></Image>
+                        :
+                        <div className="flex justify-center items-center w-[25px] h-[25px] rounded-4xl bg-slate-800 text-xs/snug">{author.spotify_id[0].toUpperCase()}</div>
+                        }
+                        <div className="flex">
+                        <h3 className="text-amber-50">{author.spotify_id}</h3>
+                        </div>
+                    </span>  */}
+                    <h3 className="text-sm text-amber-50">{new Date(created_at).toLocaleString()}</h3>
+                </div>
+            </span>
+            <div className="flex flex-col gap-2">
+                <h3 className="border-b-2 border-b-amber-50/20">Membros:</h3>
+                <ul>
+                    {members.map( member => 
+                        <User 
+                            key={member.user_id}
+                            member={member}
+                        />
+                    )}
+                </ul>
+            </div>
+        </section>
+    )
+
+}
+
+function User({ member }: { member: GroupMember }) {
+
+    const { users: user } = member
+
+    return (
+        <span className="flex gap-1 items-center border-slate-400/30 pt-1">
+            {(user.img_url !== 'NULL')
+            ?
+            <Image
+                src={user.img_url!}
+                alt={`${user.spotify_id} image`}
+                width={25}
+                height={25}
+            ></Image>
+            :
+            <div className="flex justify-center items-center w-[25px] h-[25px] rounded-4xl bg-slate-800 text-xs/snug">{user.spotify_id[0].toUpperCase()}</div>
+            }
+            <div className="flex">
+            <h3 className="text-amber-50">{user.spotify_id}</h3>
+            {/* <h5 className="text-xs text-slate-300">{new Date(post.created_at).toLocaleString()}</h5> */}
+            </div>
+        </span> 
     )
 
 }

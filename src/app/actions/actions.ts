@@ -151,6 +151,62 @@ export async function createPlaylist( formData: FormData ) {
 
 }
 
+export async function addToPlaylist(playlistId: string, trackUri: string) {
+
+    const session = await getServerSession(authOptions)
+    if (!session || !session.token.accessToken || !session.user?.email || !(session.token as SpotifyToken).sub ) throw new Error('Not authenticated')
+
+    const res = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${session.token.accessToken}`,
+            'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify({
+            uris: [
+                trackUri
+            ]
+        })
+    })
+    
+    console.log(res);
+    if (!res.ok) throw new Error('Failed to add song to playlist on Spotify')
+
+    const spotifyData: SpotifyPlaylistResponse = await res.json()
+    console.log(spotifyData);
+
+    revalidatePath(`/playlists/`)
+
+} 
+
+export async function removeTrack(playlistId: string, trackUri: string, snapshotId: string) {
+
+    const session = await getServerSession(authOptions)
+    if (!session || !session.token.accessToken || !session.user?.email || !(session.token as SpotifyToken).sub ) throw new Error('Not authenticated')
+
+    const res = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${session.token.accessToken}`,
+            'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify({
+            tracks: [
+                {
+                    uri: trackUri
+                }
+            ],
+            snapshotId: snapshotId
+        })
+    })    
+
+    console.log(res);
+    if (!res.ok) throw new Error('Failed to remove song to playlist on Spotify')
+
+    revalidatePath(`/playlists/${playlistId}`)
+
+}
+
 export async function createPost(newTrack: Post, email: string, group_id: string) {
 
     const valid = Object.entries(newTrack).every( ([key, value]) => {

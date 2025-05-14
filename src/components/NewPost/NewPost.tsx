@@ -1,5 +1,5 @@
 'use client'
-import { createPost } from "@/app/actions/actions"
+import { addToPlaylist, createPost } from "@/app/actions/actions"
 import { useModal } from "@/app/contexts/ModalContext"
 import useDebounce from "@/hooks/useDebounce"
 import useSpotifySeach from "@/hooks/useSpotifySearch"
@@ -31,7 +31,44 @@ const DEFAULT_TRACK: Post = {
     message: "",
 }
 
-export default function NewPost() {
+type ValidTypes = 'grupo' | 'playlist'
+type CreatePost = ((newTrack: Post, email: string, group_id: string) => Promise<void>)
+type AddPlaylist = ((playlistId: string, trackUri: string) => Promise<void>)
+
+interface PostType {
+    message: {
+        loading: string
+        sucess: string
+        error: string
+    }
+    create: CreatePost | AddPlaylist
+}
+
+const POST_TYPES: Record<ValidTypes, PostType> = {
+    grupo: {
+        message: {
+            loading: 'Criando post...',
+            sucess: 'Post criado com sucesso!',
+            error: 'Erro ao criar post!',
+        },
+        create: createPost,
+    },
+    playlist: {
+        message: {
+            loading: 'Adicionando música...',
+            sucess: 'Música adicionada à playlist com sucesso',
+            error: 'Erro ao adicionar música',
+        },
+        create: addToPlaylist,
+    },
+}
+
+export default function NewPost({ type }: { type: 'grupo' | 'playlist' }) {
+
+    const {
+        message,
+        create
+    } = POST_TYPES[type]
 
     const [search, setSearch] = useState('')
     const [debounced, setDebounced] = useDebounce(search, 500)
@@ -42,7 +79,8 @@ export default function NewPost() {
     const [selectedTrack, setSelectedTrack] = useState<Post>(DEFAULT_TRACK)
 
     const { data: session } = useSession()
-    const group_id = usePathname().split('/')[2]
+    const id = usePathname().split('/')[2]
+    console.log(id);
     const router = useRouter()
 
     const accessToken = session?.token.accessToken
@@ -70,7 +108,14 @@ export default function NewPost() {
         // const postPromise = createPost(selectedTrack, session.user.email, group_id)
         const postPromise = async () => {
             try {
-                await createPost(selectedTrack, session.user!.email!, group_id)
+                // await createPost(selectedTrack, session.user!.email!, group_id)
+                if (type === 'grupo') {
+                    await (create as CreatePost)(selectedTrack, session.user!.email!, id)
+                } else {
+                    console.log('playlist');
+                    console.log(id, selectedTrack.uri);
+                    await (create as AddPlaylist)(id, selectedTrack.uri)
+                }
                 setSubmitting(false)
                 router.back()
             } catch (err) {
@@ -78,9 +123,9 @@ export default function NewPost() {
             }
         }
         toast.promise(postPromise(), {
-            loading: 'Criando post...',
-            success: 'Post criado com sucesso!',
-            error: 'Erro ao criar post!',
+            loading: message.loading,
+            success: message.sucess,
+            error: message.error,
         })
         // router.back()
     }
@@ -243,6 +288,7 @@ export default function NewPost() {
                     }
                 </span>
 
+                {(type === 'grupo')&&
                 <textarea 
                     name="" 
                     id="" 
@@ -254,6 +300,7 @@ export default function NewPost() {
                     placeholder="Mensagem (opcional)"
                     className="border-2 border-amber-50/30 rounded resize-none px-2 py-1 focus:outline-none"
                 ></textarea>
+                }
             </div>
             
             {submitting}
@@ -271,7 +318,7 @@ export default function NewPost() {
                     </svg>
                     Adicionando...
                 </>
-                : 'Adicionar Post'
+                : `Adicionar`
                 }
             </button>
 

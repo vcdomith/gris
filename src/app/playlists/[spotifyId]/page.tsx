@@ -1,5 +1,7 @@
+import { removeTrack } from "@/app/actions/actions"
 import ButtonWatcher from "@/components/ButtonWatcher/ButtonWatcher"
 import Container from "@/components/Container/Container"
+import { DeleteTrackButton } from "@/components/DeleteTrackButton/DeleteTrackButton"
 import Track from "@/components/Track/Track"
 import { IArtist, SpotifyPlaylistResponse, SpotifyToken } from "@/interfaces/Spotify"
 import { authOptions } from "@/utils/authOptions"
@@ -9,17 +11,33 @@ import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
-type Params = Promise<{ id: number }>
+type Params = Promise<{ spotifyId: string }>
 export default async function Playlist({ params }: { params: Params }) {
 
-    const { id } = await params
+    const { spotifyId } = await params
 
     const session = await getServerSession(authOptions)
     if (!session || !session.token.accessToken || !session.user?.email) {
-        redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
+        redirect(`/api/auth/signin?callbackUrl=/groups/${spotifyId}`)
     }
 
+    console.log(spotifyId);
+
     const supabase = dbAdmin()
+
+    const { data: playlistBySpotifyId, error: playlistLookupError } = await supabase
+        .schema('gris')
+        .from('playlists')
+        .select('*')
+        .eq('spotify_id', spotifyId)
+        .single()
+
+    if (!playlistBySpotifyId || playlistLookupError) {
+        console.error('Could not find playlist by spotfy_id', playlistLookupError)
+        redirect('/')
+    }
+
+    const id = playlistBySpotifyId.id
 
     const { data: userWithMembership, error: userError } = await supabase
         .schema('gris')
@@ -27,6 +45,7 @@ export default async function Playlist({ params }: { params: Params }) {
         .select(`
             id,
             email,
+            spotify_id,
             playlist_members (
                 playlist_id
             )
@@ -87,7 +106,7 @@ export default async function Playlist({ params }: { params: Params }) {
     return (
      
         <>
-        <ButtonWatcher groupId={id} />        
+        <ButtonWatcher href={`/playlists/${spotifyId}/modal`} />        
         <div className="flex flex-col gap-4 rounded-lg w-full min-w-[calc(100vw-2rem)] bg-amber-50/10 md:bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] md:min-w-[60dvw] lg:w-[40dvw] lg:min-w-[40dvw]">
            
             <span className="flex gap-2 justify-between items-center w-full pb-1 border-b-2 border-slate-300/30">
@@ -111,15 +130,23 @@ export default async function Playlist({ params }: { params: Params }) {
             </span>
 
             <Link 
-                href={`/groups/${id}/modal`}
+                href={`/playlists/${spotifyId}/modal`}
                 id='observed' 
                 prefetch
                 className="flex justify-center items-center gap-1 w-full rounded-md py-1 bg-slate-300 hover:bg-slate-200 text-slate-800 cursor-pointer active:bg-slate-400 transition-colors"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
+                <span className="relative w-[20px] h-[20px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-3 stroke-neutral-800 absolute top-[0px] left-[-0.25rem]">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5 stroke-neutral-800 absolute top-[0px] left-[0px]">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
+                    </svg>
+                </span>
+                <p>
                 Adicionar música
+                </p>
             </Link>
 
             <div className="">
@@ -134,19 +161,38 @@ export default async function Playlist({ params }: { params: Params }) {
                         className="flex justify-between"
                     >
                         
-                        <Track 
-                            img={track.album.images[0].url} 
-                            name={track.name} 
-                            artist={track.artists.map((a: IArtist) => a.name).join(', ')}
-                            size={60}
-                            omitPadding
-                            author={ 
-                                <Author 
-                                    id={added_by.id}
-                                    playlist_members={playlist_members}
-                                />
+                        <span 
+                            className="flex justify-between w-full"
+                        >
+                            <Track 
+                                img={track.album.images[0].url} 
+                                name={track.name} 
+                                artist={track.artists.map((a: IArtist) => a.name).join(', ')}
+                                size={60}
+                                omitPadding
+                                author={ 
+                                    <Author 
+                                        id={added_by.id}
+                                        playlist_members={playlist_members}
+                                    />
+                                }
+                            />
+                            {(added_by.id === userWithMembership.spotify_id)&&
+                            // <button 
+                            //     type="submit"
+                            //     className="bg-transparent transition-colors cursor-pointer rounded p-0.5"
+                            // >
+                            // <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 stroke-amber-50/50 group-hover:stroke-amber-50/80 transition-colors">
+                            //     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            // </svg>
+                            // </button>
+                            <DeleteTrackButton 
+                                playlistId={spotifyId} 
+                                trackUri={track.uri} 
+                                snapshotId={playlist.snapshot_id}
+                            />
                             }
-                        />
+                        </span>
                         {/* <Author 
                             id={added_by.id}
                             playlist_members={playlist_members}

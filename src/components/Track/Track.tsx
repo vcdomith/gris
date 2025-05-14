@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Post } from "../NewPost/NewPost";
 import { ReactNode } from "react";
 
 interface TrackProps {

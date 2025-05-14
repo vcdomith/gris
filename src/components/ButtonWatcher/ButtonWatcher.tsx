@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-export default function ButtonWatcher({ groupId }: { groupId: number }) {
+export default function ButtonWatcher({ href }: { href: string }) {
 
     const [visible, setVisible] = useState(true)
 
@@ -35,7 +35,7 @@ export default function ButtonWatcher({ groupId }: { groupId: number }) {
         >
         <Link 
             prefetch
-            href={`/groups/${groupId}/modal`}
+            href={href}
             className={`relative flex justify-center items-center w-15 h-15 md:w-12 md:h-12 rounded-full bg-slate-300 hover:bg-slate-200 active:bg-slate-400 inset-shadow-sm transition-colors shadow-2xl`}
         >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-5 md:size-4 stroke-neutral-800 absolute top-[1rem] left-[0.4rem] md:top-3 md:left-1.5">

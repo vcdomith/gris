@@ -131,7 +131,7 @@ export default async function Home() {
               playlists?.map(playlist => 
                 <Link 
                   key={playlist.id}
-                  href={`/playlists/${playlist.id}`}
+                  href={`/playlists/${playlist.spotify_id}`}
                   prefetch
                   className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
                 >
