@@ -21,7 +21,11 @@ export function DeleteTrackButton({ playlistId, trackUri, snapshotId }: DeleteTr
             try {
                 await removeTrack(playlistId, trackUri, snapshotId)
                 router.refresh()
-                toast.success('Música removida com sucesso!')
+                
+                setTimeout(() => {
+                    toast.success('Música removida com sucesso!')
+                }, 2000)
+
             } catch (error) {
                 toast.error('Erro ao remover música!')
             }

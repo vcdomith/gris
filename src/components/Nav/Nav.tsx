@@ -42,6 +42,7 @@ export default async function Nav() {
                 </div>
             </div>
             </Link>
+            {/* Make the whole user icon/button into a client component from the get go */}
             <span className="flex gap-2 items-center">
                 {(session && user && (user.img_url !== 'NULL'))
                 ?
