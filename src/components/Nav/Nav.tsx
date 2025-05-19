@@ -7,12 +7,25 @@ import Image from "next/image";
 import { dbAdmin } from "@/utils/db/supabase";
 import { redirect } from "next/navigation";
 import Groovy from "../Groovy/Groovy";
+import User from "../User/User";
+
+export interface SessionUser {
+
+    created_at: string;
+    email: string;
+    id: number;
+    img_url: string | null;
+    refresh_token: string;
+    spotify_id: string;
+    updated_at: string | null;
+
+}
 
 export default async function Nav() {
 
     const session: TokenSession | null = await getServerSession(authOptions)
 
-    if (!session || !session.user.email) {
+    if (!session || !session.user || !session.user.email) {
         redirect(`/api/auth/signin`)    
     }
 
@@ -43,7 +56,10 @@ export default async function Nav() {
             </div>
             </Link>
             {/* Make the whole user icon/button into a client component from the get go */}
-            <span className="flex gap-2 items-center">
+            {user&&
+            <User user={user} />
+            }
+            {/* <span className="flex gap-2 items-center">
                 {(session && user && (user.img_url !== 'NULL'))
                 ?
                 <Image
@@ -57,9 +73,7 @@ export default async function Nav() {
                     {user?.spotify_id[0].toUpperCase()}
                 </div>
                 }
-                {/* <h3>{user?.spotify_id}</h3> */}
-                {/* <AuthButton /> */}
-            </span>
+            </span> */}
         </nav>
     )
 
