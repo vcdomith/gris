@@ -1,7 +1,9 @@
-import { removeTrack } from "@/app/actions/actions"
+import { followPlaylist, removeTrack } from "@/app/actions/actions"
 import ButtonWatcher from "@/components/ButtonWatcher/ButtonWatcher"
+import ClientButton from "@/components/ClientButton/ClientButton"
 import Container from "@/components/Container/Container"
 import { DeleteTrackButton } from "@/components/DeleteTrackButton/DeleteTrackButton"
+import FollowButton from "@/components/FollowButton/FollowButton"
 import Track from "@/components/Track/Track"
 import { IArtist, SpotifyPlaylistResponse, SpotifyToken } from "@/interfaces/Spotify"
 import { authOptions } from "@/utils/authOptions"
@@ -102,7 +104,7 @@ export default async function Playlist({ params }: { params: Params }) {
     }
     const playlist: SpotifyPlaylistResponse = await res.json()
     console.log(playlist);
-
+    
     return (
      
         <>
@@ -126,6 +128,8 @@ export default async function Playlist({ params }: { params: Params }) {
                     </span>
                     <h5 className="truncate">{name}</h5>
                 </div>
+
+                <FollowButton id={spotifyId} />
 
             </span>
 

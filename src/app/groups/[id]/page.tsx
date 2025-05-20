@@ -192,6 +192,7 @@ export default async function Group(
                         <ClientButton
                             render={
                                 <GroupDetails 
+                                    name={name}
                                     created_at={created_at}
                                     created_by={created_by}
                                     members={group_members}
@@ -306,20 +307,24 @@ function Post({ post }: { post: PostDB }) {
 }
 
 interface GroupDetailsProps {
+    name: string
     created_at: string 
     created_by: number 
     members: GroupMember[] 
 }
 
-function GroupDetails({ created_at, created_by, members }: GroupDetailsProps) {
+function GroupDetails({ name, created_at, created_by, members }: GroupDetailsProps) {
 
     const users = members.filter( member => member.user_id === created_by )[0]
 
     return (
-        <section>
-            <span className="flex gap-2">
-                <h3>Criado por:</h3>
-                <div className="flex flex-col gap-2">
+        <section
+            className="flex flex-col gap-4 p-2"
+        >
+            <h2 className="text-xl text-amber-50">{name}</h2>
+            <span className="flex flex-col gap-2">
+                <h3 className="border-b-2 border-b-amber-50/20" >Criado por:</h3>
+                <div className="flex gap-2 items-center">
                     <User member={users}/>
                     {/* <span className="flex gap-1 items-center border-slate-400/30 pt-1">
                         {(author.img_url !== 'NULL')
@@ -337,7 +342,7 @@ function GroupDetails({ created_at, created_by, members }: GroupDetailsProps) {
                         <h3 className="text-amber-50">{author.spotify_id}</h3>
                         </div>
                     </span>  */}
-                    <h3 className="text-sm text-amber-50">{new Date(created_at).toLocaleString()}</h3>
+                    <h3 className="text-sm text-amber-50/50">{'em ' + `${new Date(created_at).toLocaleString()}`}</h3>
                 </div>
             </span>
             <div className="flex flex-col gap-2">
@@ -361,7 +366,7 @@ function User({ member }: { member: GroupMember }) {
     const { users: user } = member
 
     return (
-        <span className="flex gap-1 items-center border-slate-400/30 pt-1">
+        <span className="flex gap-1 items-center border-slate-400/30">
             {(user.img_url !== 'NULL')
             ?
             <Image

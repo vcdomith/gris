@@ -179,6 +179,25 @@ export async function addToPlaylist(playlistId: string, trackUri: string) {
 
 } 
 
+export async function followPlaylist(playlistId: string) {
+
+    const session = await getServerSession(authOptions)
+    if (!session || !session.token.accessToken || !session.user?.email || !(session.token as SpotifyToken).sub ) throw new Error('Not authenticated')
+
+    const res = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${session.token.accessToken}`,
+            'Content-Type': 'application/json', 
+        }
+    })
+
+    console.log(res);
+    if (!res.ok) throw new Error('Failed to follow playlist')
+    
+    return
+}
+
 export async function removeTrack(playlistId: string, trackUri: string, snapshotId: string) {
 
     const session = await getServerSession(authOptions)
