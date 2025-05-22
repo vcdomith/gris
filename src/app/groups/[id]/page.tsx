@@ -12,6 +12,7 @@ import EmptyMessage from "@/components/EmptyMessage/EmptyMessage";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import Invite from "@/components/Invite/Invite";
 import ButtonWatcher from "@/components/ButtonWatcher/ButtonWatcher";
+import GroupBanner from "@/components/Banners/Banners";
 
 function groupPostsByDate(posts: PostDB[]): Record<string, PostDB[]> {
 
@@ -77,7 +78,7 @@ export default async function Group(
     const { id } = await params
     const session = await getServerSession(authOptions)
     if (!session || !session?.user?.email) {
-        redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
+        redirect(`auth/signin?callbackUrl=/groups/${id}`)
     }
 
     const supabase = dbAdmin()
@@ -99,7 +100,7 @@ export default async function Group(
 
     if (userError || !userWithMembership?.id) {
         console.error('Supabase could not fetch user')
-        redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
+        redirect(`/auth/signin?callbackUrl=/groups/${id}`)
     }
 
     const isMember = userWithMembership.group_members.length === 1
@@ -154,6 +155,7 @@ export default async function Group(
 
     return (
         <>
+            {/* <GroupBanner /> */}
             <ButtonWatcher href={`/groups/${id}/modal`} />
             <div className="flex flex-col gap-4 rounded-lg w-full bg-amber-50/10 md:bg-amber-50/20 backdrop-blur-lg p-4 pt-1 overflow-y-hidden md:w-[60dvw] lg:w-[40dvw]">
             

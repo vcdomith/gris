@@ -9,6 +9,9 @@ import { dbAdmin } from "@/utils/db/supabase";
 import Link from "next/link";
 import EmptyMessage from "@/components/EmptyMessage/EmptyMessage";
 import Modal from "@/components/Modal/Modal";
+import GroupBanner from "@/components/Banners/Banners";
+import Groovy from "@/components/Groovy/Groovy";
+import Banners from "@/components/Banners/Banners";
 
 
 export default async function Home() {
@@ -18,7 +21,7 @@ export default async function Home() {
   console.log(session);
 
   if (!session) {
-      redirect(`/api/auth/signin`)
+      redirect(`/auth/signin`)
   }
 
   const supabase = dbAdmin()
@@ -70,6 +73,9 @@ export default async function Home() {
       <>
         <div className="flex flex-col gap-2 w-full min-w-[calc(100vw-2rem)] md:w-[60dvw] md:min-w-[60dvw] lg:w-[40dvw] lg:min-w-[40dvw] bg-amber-50/20 backdrop-blur-lg p-2 rounded">
 
+          {/* <GroupBanner /> */}
+          {Banners.group}
+
           <span className="flex justify-between border-b-1 border-b-amber-50/50 pb-1">
               <h3>Grupos</h3>
               <Link 
@@ -80,7 +86,7 @@ export default async function Home() {
               </Link>
           </span>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mb-4">
           
             {(groups && groups?.length > 0)
             ?
@@ -101,9 +107,10 @@ export default async function Home() {
                 className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
               >
                 {/* <h4>[ {group.id} ]</h4> */}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                </svg>
+                </svg> */}
+                <Groovy size={25} />
 
                 <h2>{group.name}</h2>
               </Link>
@@ -114,6 +121,8 @@ export default async function Home() {
             </div>
             }
           </div>  
+
+          {Banners.playlist}
 
           <span className="flex justify-between border-b-1 border-b-amber-50/50 pb-1">
               <h3>Playlists</h3>
@@ -135,9 +144,13 @@ export default async function Home() {
                   prefetch
                   className="flex gap-2 items-center transition-colors hover:bg-amber-50/20 px-2 py-1 rounded-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                  {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                  </svg> */}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
                   </svg>
+
 
                   <h2>{playlist.name}</h2>
                 </Link>
