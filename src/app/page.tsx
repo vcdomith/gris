@@ -21,7 +21,7 @@ export default async function Home() {
   console.log(session);
 
   if (!session) {
-      redirect(`/auth/signin`)
+      redirect(`/api/auth/signin`)
   }
 
   const supabase = dbAdmin()

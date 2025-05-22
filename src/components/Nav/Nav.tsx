@@ -26,7 +26,7 @@ export default async function Nav() {
     const session: TokenSession | null = await getServerSession(authOptions)
 
     if (!session || !session.user || !session.user.email) {
-        redirect(`/auth/signin`)    
+        redirect(`/api/auth/signin`)    
     }
 
     const supabase = dbAdmin()

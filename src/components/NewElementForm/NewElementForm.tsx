@@ -16,7 +16,7 @@ export default function NewElementForm({
 
     const { data: session } = useSession()
     if (!session || !session.user?.email) {
-        redirect(`/auth/signin`)
+        redirect(`/api/auth/signin`)
     }
 
     const handleSubmit = async (e: FormEvent) => {

@@ -78,7 +78,7 @@ export default async function Group(
     const { id } = await params
     const session = await getServerSession(authOptions)
     if (!session || !session?.user?.email) {
-        redirect(`auth/signin?callbackUrl=/groups/${id}`)
+        redirect(`api/auth/signin?callbackUrl=/groups/${id}`)
     }
 
     const supabase = dbAdmin()
@@ -100,7 +100,7 @@ export default async function Group(
 
     if (userError || !userWithMembership?.id) {
         console.error('Supabase could not fetch user')
-        redirect(`/auth/signin?callbackUrl=/groups/${id}`)
+        redirect(`/api/auth/signin?callbackUrl=/groups/${id}`)
     }
 
     const isMember = userWithMembership.group_members.length === 1
